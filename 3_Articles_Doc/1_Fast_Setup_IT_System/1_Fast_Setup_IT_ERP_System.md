@@ -76,7 +76,7 @@ As shown in the introduction section Figure1, the Dolibarr will be set in the fo
 - **ER Back End Server** : VN run the MySQL data base used by different Dolicarr application modules.
 - **ERP File Server** : A python FTP server used to store and back different files user upload to Dolicarr. 
 
-All the VM's are connect to the corporation network router/switch so the company user can access the system in the internal network. For the email server we use a Postfix email server also set inside the subnet. And as Dolicarr recommand Gmail, so currently for the Dolicarr's staff account I use the normal Gmail account.
+All the VM's are connect to the corporation network router/switch so the company user can access the system in the internal network. For the email server we use a Postfix email server also set inside the subnet. And as Dolicarr recommend Gmail, so currently for the Dolicarr's staff account I use the normal Gmail account. For the FTP server, as the FTP module is not free, so I use the python 
 
 
 
@@ -158,6 +158,118 @@ Now the Dolibar is ready for using in the cyber range. Now we need to enable the
 
 ### 4. Configure the Dolibarr Function Models
 
-This section is more related to add the information and enable the function modules used in the railway company via the Admin Dashboard. You can refer to the usage manual https://wiki.dolibarr.org/index.php/User_documentation and the https://www.dolibarr.org/dolibarr-tutorial-videos.php to learn how to use it. I only introduce some basic configuration I did in this section. 
+This section is more related to add the information and enable the function modules used in the railway company via the Admin Dashboard. You can refer to the usage manual https://wiki.dolibarr.org/index.php/User_documentation and the https://www.dolibarr.org/dolibarr-tutorial-videos.php to learn how to use it. I only introduce some basic configuration I did in this section. Login with the admin credential you configured in the previous section to get to the setup dashboard.
 
-4.1 Setup the Company Information
+#### 4.1 Setup the Company Information
+
+Now we need to customized the company's ERP system, got to setup -> Company Origination page as shown below, fill in all the railway company general information such as address, official email, Fax, PH, Web URL, upload the company logo.
+
+![](img/s_09.png)
+
+Then go to the "Display" part to modify the CSS style as shown below: 
+
+![](img/s_10.png)
+
+If you want the user's account more easy to be attacked during the cyber attack, you can go to the security setting to disable some of the security setting such as the password format as shown below, then the user can use simple password such 123456 and during cyber exercise, the misconfigured user account can be used as a weakness point for the attacker to get in the system to cause the information leakage. 
+
+![](img/s_11.png)
+
+After setup the company Information then the main portal login page will be like this with the company name and logo and overview image:
+
+![](img/s_12.png)
+
+
+
+#### 4.2 Setup the HR System for the Company 
+
+We can add user group for the simulated railway company now as the "Users & Groups" is the default module, but before that we need to active some HR management modules, from setup -> Modules/Application active the modules as shown below 
+
+![](img/s_14.png)
+
+- "Leave request management": Added the different type of leave for different group (manager, staff, engineer)
+- "Expense report ": Set the report track and rules so we can build the report diagram after we add in different type of staff/user.
+- Recruitment : for public the job position and the job application approval process. 
+- Human resource management : the module for manage all the tools for people.
+
+After finished configuration, we can add a new staff such as staff_alice as a OCC operator then link her permission to HR system as shown below, 
+
+![](img/s_15.png)
+
+Now we login Alice account and we can help her apply leave:
+
+![](img/s_16.png)
+
+Then we go back the admin user (as alice report to admin), then under the leaves tab we can see the new leave request and approval it as shown below:
+
+![](img/s_17.png)
+
+
+
+#### 4.3 Configure the Customer Relationship Management 
+
+As the railway company need to get feed back from the customer so we also enable the Third Part and the Ticket System for customer to report the abnormal scenario of feed back the service as shown below:
+
+![](img/s_18.png)
+
+In the ticket system, we need to configure the public service interface so the passengers can use it as shown below:
+
+![](img/s_19.png)
+
+After that the passengers can access the ticket system page
+
+![](img/s_20.png)
+
+
+
+#### 4.4 Configure the Financial Modules
+
+In this section as we are simulation, so we only active the salaries, then set the salary for each staff as shown below:
+
+![](img/s_21.png)
+
+After that we can go the the admin or user under financial group to help create new salary for the staff "test user " we the regular payment configuration as shown below:
+
+![](img/s_22.png)
+
+
+
+#### 4.5 Configure multi modules tools
+
+ In the multi-module tools we setup the data import and export so we can export the data to build IT ERP system for other cyber range without from the beginning steps.
+
+![](img/s_23.png)
+
+ Then we also enable AI with custom AI service provided then we can link the function to the local GPU with Ollama service. 
+
+![](img/s_24.png)
+
+For the email as Dolibarr recommand GMAIL or Outlook service, so current I follow this instruction  https://wiki.dolibarr.org/index.php/Setup_EMails to setup use the smtp.gmail.com directly. 
+
+For the collaborative work I only active he event collaboration as show below: 
+
+![](img/s_25.png)
+
+Then as admin we can create a event such as brief session and assign the attendance for different railway staff by add them in the callandar event:
+
+ ![](img/s_28.png)
+
+Now we almost have all the module we need, then the next step is to fill in the staff information, we can use AI to generate the staff information. Then to use the python script to generate a action in the ERP system such as apply leave in the HR system, we need to use the lib https://pypi.org/project/dolibarr/
+
+Then we follow the example in this link https://wiki.dolibarr.org/index.php/Module_Web_Services_API_REST_(developer)#PHP to call the related API to generate the event or action. 
+
+
+
+#### 4.6 Configure Special function module 
+
+If you want to setup some special function such as 2FA which not in the dolibarr, you may need to purchse the module from the dolistore https://www.dolistore.com/index.php?l=en, then purchase the module you want then down load the zip file then follow this guide to install it : 
+
+https://wiki.dolibarr.org/index.php/Module_TwoFactorAuth
+
+![](img/s_27.png)
+
+Now we almost finish create the ERP IT system for the cyber range which user for cyber exercise. 
+
+
+
+------
+
