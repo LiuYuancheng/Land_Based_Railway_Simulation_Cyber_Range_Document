@@ -72,9 +72,92 @@ As shown in the introduction section Figure1, the Dolibarr will be set in the fo
 
 ![](img/s_04.png)
 
+- **ERP Front End Server**: VM run the Dolibarr main application server which host the web service and all the detailed ERP functional modules. 
+- **ER Back End Server** : VN run the MySQL data base used by different Dolicarr application modules.
+- **ERP File Server** : A python FTP server used to store and back different files user upload to Dolicarr. 
+
+All the VM's are connect to the corporation network router/switch so the company user can access the system in the internal network. For the email server we use a Postfix email server also set inside the subnet. And as Dolicarr recommand Gmail, so currently for the Dolicarr's staff account I use the normal Gmail account.
 
 
 
+------
+
+### 3. Install Dolibarr on Ubuntu VMs
+
+To install the Dolibarr System on Ubuntu VM, it provides the installation deb package : https://www.dolibarr.org/downloads.php, but when you download and install it, you may see the "connect to database failed" error after the step1 as shown below:
+
+![](img/s_05.png)
+
+Use the below steps to solve the Dolibarr problem: 
+
+To install Dolibarr on Ubuntu, set up a LAMP stack (Apache, MySQL, PHP), download the latest .deb package from Dolibarr's website, and install it using sudo dpkg -i dolibarr_x.y.z-w.w_all.deb. Finally, navigate to http://localhost/dolibarr to complete the configuration via the web-based installer. 
+**Install LAMP Server**
+Before installing Dolibarr, install Apache, MySQL/MariaDB, and PHP: 
+
+```
+sudo apt update
+sudo apt install apache2 mariadb-server php libapache2-mod-php php-mysql php-curl php-intl php-gd php-json php-mbstring
+```
+
+**Download and Install Dolibarr** 
+Download the latest Debian/Ubuntu package (.deb) from the official Dolibarr wiki or SourceForge.
+Install it using the terminal:
+
+```
+sudo dpkg -i dolibarr_x.y.z-w.w_all.deb
+```
+
+If the command fails due to missing dependencies, run:
+
+```
+sudo apt-get install -f
+```
+
+**Configure MySQL Database in the backend VM.** 
+
+To make the installation easier, it use the same installation file, then I will modify the front end dolibarr application configuration file point to the backend data base
+Secure your installation:
+
+```
+ sudo mysql_secure_installation
+```
+
+Log in to MySQL: 
+
+```
+sudo mysql -u root -p
+```
+
+Create the database and user:
+
+```
+CREATE DATABASE dolibarr;
+CREATE USER 'dolibarruser'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON dolibarr.* TO 'dolibarruser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+If you setup in one ubuntu machine, you can skip this step: `sudo vim the /etc/dolibar/conf.php` file to point the application to the data base. Replace the localhost with the database VM's IP address as high light in the below image:
+
+![](img/s_06.png)
+
+Make sure the backend server's port `3306` is opened 
+
+**Finalize via Web Installer** 
+
+Open your browser and navigate to http://localhost/dolibarr or http://your_server_ip/dolibarr. Redo the step1 to fill in the information then you will see the error will be cleared and you can access the main ERP web portal configuration page as shown below:
+
+![](img/s_07.png)
+
+Now the Dolibar is ready for using in the cyber range. Now we need to enable the function modules such as the HRM system the Leaving system so it can be fix the role of a ERP system in a railway company. And we also need to fill in some staff information.
 
 
 
+------
+
+### 4. Configure the Dolibarr Function Models
+
+This section is more related to add the information and enable the function modules used in the railway company via the Admin Dashboard. You can refer to the usage manual https://wiki.dolibarr.org/index.php/User_documentation and the https://www.dolibarr.org/dolibarr-tutorial-videos.php to learn how to use it. I only introduce some basic configuration I did in this section. 
+
+4.1 Setup the Company Information
