@@ -2,6 +2,8 @@
 
 **Project Design Purpose** : For the cyber range/twin (such as Power Grid, Airport Runway, Traffic Lights) used in the attack and defense cyber exercise, most of time the Red/Blue/Yellow Team will focus more on the Operational Technology (OT) system, but some times there are also requirements for building a simple company IT system (such as the internal ERP & HR service) to simulate the attack initial access through weaknesses in the corporate IT environment before pivoting into OT networks such as  IT-to-OT attack chains, credential compromise, lateral movement, and exploitation of misconfigured enterprise services.
 
+![](img/s_01.png)
+
 As shown in the 6 layers (lvl0-5) of ISA-95/IEC62264 System architecture, the IT layer (level4-5) represents the corporate network where business operations are managed. This project aims to provide a fast and practical approach to build such an ERP-based IT environment for OT cyber twin system in several hours by using the opensource DOLIBARR ERP & CRM package for the Land Based Railway Cyber Range System. This article is structured into three main sections:
 
 - **System Architecture**: Introduces the overall cyber range architecture, cyber exercise network topology and explains the role and positioning of the ERP system within the railway environment.
@@ -66,22 +68,30 @@ The Land-Based Railway Cyber Range System is designed in accordance with the ISA
 To enhance realism, the cyber range incorporates automated user behavior through the Cluster User Simulator (script-based engine). These simulation scripts generate dynamic and continuous activities across the IT network, mimicking the daily operations of various railway company roles such IT-Support-Engineer, Officer Staff, Railway HQ operator, Train driver / safety checker. The main components of this architecture include:
 
 - **Railway Corporate Network Environment**: A virtualized infrastructure that replicates enterprise-grade network elements, including servers, endpoints, firewalls, routers, and switches.
-- **Railway ERP system**: The ERP system with the main function of HRM, customer relationship, financial, ticketing and company event.
+- **Railway ERP System**: The ERP software with the front end application and back end data base provide the main function of HRM, customer relationship, financial, ticketing and company event.
 - **Staff Activity Simulation Engine**: An automated user activity generator that emulates realistic user behavior, producing network traffic and system interactions across different roles.
 
 #### 2.2 System Network Configuration 
 
-As shown in the introduction section Figure1, the Dolibarr will be set in the forth subnet corporation network (light blue section) in the cyber range. Dolibarr recommends to set all the components in one server or cloud to increase the stability. But to make it be easily attacked during the cyber exercise, I will split configure the system in 3 VM (one application front end VM, one database backend VM and one File storage VM). The network configure is shown below:
+As shown in Section 1 (Figure 1), the Dolibarr ERP & CRM system is deployed within the corporate IT subnet (Level 4 – Enterprise Zone) of the cyber range, highlighted as the light-blue segment in the architecture. Although Dolibarr recommends deploying all components on a single server (or cloud instance) to simplify management and improve stability, this project intentionally adopts a distributed three VM (one application front end VM, one database backend VM and one File storage VM) architecture so it can be easily attacked during the cyber exercise with below attack vector:
+
+- Web application attacks targeting the front-end server
+- Database exploitation and data exfiltration scenarios
+- Credential harvesting and lateral movement between VMs
+- Misconfigured file services and insecure data transfer channels
+
+The detailed network configuration is illustrated below:
 
 ![](img/s_04.png)
 
-- **ERP Front End Server**: VM run the Dolibarr main application server which host the web service and all the detailed ERP functional modules. 
-- **ER Back End Server** : VN run the MySQL data base used by different Dolicarr application modules.
-- **ERP File Server** : A python FTP server used to store and back different files user upload to Dolicarr. 
+The main function of each VM includes:
 
-All the VM's are connect to the corporation network router/switch so the company user can access the system in the internal network. For the email server we use a Postfix email server also set inside the subnet. And as Dolicarr recommend Gmail, so currently for the Dolicarr's staff account I use the normal Gmail account. For the FTP server, as the FTP module is not free, so I use the python 
+- **ERP Front-End Server** : This VM hosts the Dolibarr application and web interface, providing access to all ERP functional modules (HR, finance, administration, etc.). It acts as the primary entry point for users via the internal network or web portal.
 
+- **ERP Back-End Server (Database Server)** : This VM runs the database service using MySQL, which stores all ERP-related data, including user information, transactions, and system configurations. Separating the database from the application layer reflects common enterprise practices and enables database-focused attack scenarios.
+- **ERP File Server** : This VM is responsible for file storage and handling user-uploaded content. As the native Dolibarr FTP module is not freely available, a lightweight Python-based FTP service is used.
 
+All three VMs are connected through the corporate network router/switch, allowing internal railway staff to access ERP services seamlessly. The network is further protected and segmented by a DMZ firewall, which controls traffic between the internal network and external access points such as the ERP web portal. For the email server we use a Postfix email server also set inside the subnet. And as Dolicarr recommend Gmail, so currently for the Dolicarr's staff account I use the normal Gmail account. 
 
 ------
 
