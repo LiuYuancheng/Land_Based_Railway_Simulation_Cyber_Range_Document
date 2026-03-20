@@ -25,27 +25,31 @@ As shown in the 6 layers (lvl0-5) of ISA-95/IEC62264 System architecture, the IT
 
 ### 1. Introduction
 
-The objective of this project is integrate the opensource Dolibarr Enterprise Resource Planning (ERP) system into the  Level 5 (enterprise IT) layer defined in the ISA-95 architecture for the Land Based Railway Cyber Range System which developed for Critical infra cyber excise. So the cyber range can provide the core business operations simulation function for a railway company such as human resources, finance, and internal administration, thereby enabling more comprehensive attack-and-defense scenarios that span both IT and OT domains. The system structure overview diagram is shown below:
+The objective of this project is to integrate a Enterprise Resource Planning (ERP) system into the enterprise IT layer of the Land Based Railway Cyber Range System to simulate the real-world corporate operations alongside industrial processes. The open-source Dolibarr ERP & CRM platform used to setup in the level4 enterprise IT layer of the railway system's ISA-95 architecture, then the platform is able to simulate essential business functions of a railway company—such as human resources, finance, and internal administration.  This addition significantly enhances the realism of the environment and enables more comprehensive cyber attack-and-defense scenarios that span both IT and OT domains. In particular, it allows simulation of real-world attack paths where adversaries initially compromise enterprise IT systems before pivoting into operational networks.
+
+The overall system architecture, including the positioning of the ERP system within the cyber range is shown below :
 
 ![](img/s_02.png)
 
 #### **1.1 Abstract **
 
-In modern cyber range and digital twin environments for critical infrastructure—such as power grids, airports, and land-based railway systems—the primary focus of cyber attack and defense exercises often centers on Operational Technology (OT) layers. These include industrial control systems, SCADA networks, and field devices where real-time operations are managed. However, real-world cyber incidents increasingly demonstrate that initial access vectors frequently originate not from OT systems directly, but from vulnerabilities within the corporate IT environment. 
+In the modern cyber range and digital twin environments for critical infrastructure—such as power grids, airports, and railway systems—cybersecurity exercises have normally focused on Operational Technology (OT) industrial control system such as SCADA networks and field devices. But in many real-world cyber incidents, as the OT environment is isolated from the internet, the attackers often need to gain initial access through some vulnerabilities or misconfiguration in the corporate IT environment then can touch the OT systems. So have a IT system between the company outside network and OT network is necessary for a cyber range used for cyber exercise.
 
-As for most of the company, the IT system are nearly same, such as the HR system, no matter whether it is a power grid company or a railway company, there will be no deferent, so unlike building the OT system which needs a lot domain knowledge a IT system for most of the cyber range can use a general one.  So that's why I use the opensource ERP(enterprise resource planning) software Dolibarr to build the IT environment for the Land Based Railway Cyber Range System I developed. 
+From a system design view, most enterprise IT environments across different industries and companies are very similar. The core systems such as HR, finance, and administrative platforms follow standardized workflows regardless of whether the organization operates in energy, transportation, or manufacturing. Unlike OT systems, which require deep domain-specific knowledge, the IT systems implemented by using the generalized solutions without sacrificing realism can almost full fill the requirement of cyber exercise. That's why I use the opensource ERP(enterprise resource planning) software Dolibarr to build the IT environment directly. And this approach enables rapid deployment of a functional and realistic enterprise environment, supporting integrated IT/OT cybersecurity scenarios without the need for extensive customization or development effort.
 
-#### **1.2 Background Information**
+#### 1.2 Background Information
 
-**1.2.1 Background of the Land Based Railway Cyber Range System**
+**1.2.1 Background of the Land-Based Railway Cyber Range System**
 
-The Railway [land-based] IT/OT System Cyber Security Test Platform is a simplified and straightforward digital twin-style Cyber Range, purpose-built for research, cyber exercises, red-blue confrontations, professional security training, threat detection, and cyber honeypot activities. What sets our system apart is its unique capability to not just emulate the IT and OT network environment of a railway company but also to virtualize real-world scenarios and showcasing the effects of cyber attacks. Moreover, our simulation system integrates automated robotic human activities generation feature, adding a dynamic layer that brings the range closer to mirroring the operations of a "live" railway company. It is used in several international cyber execise. For the detail introduction, please refer to the project document wiki repo: https://github.com/LiuYuancheng/Land_Based_Railway_Simulation_Cyber_Range_Document
+The Land-Based Railway IT/OT Cyber Security Test Platform is a cyber twin-style design and developed under the ISA-95/IEC62264 standard, purpose-built for cybersecurity research, red-blue team exercises, professional training, threat detection, and honeypot experimentation. The system is designed to emulate both IT and OT environments of a railway company, while also enabling the visualization of cyber attack impacts in a controlled setting.
 
-**1.2.2 Background of the Dolibarr ERP**
+The cyber is able to simulate realistic operational scenarios, including automated generation of human-like activities within the system. This dynamic behavior significantly enhances the fidelity of the cyber range, making it closely resemble a live railway enterprise environment. The platform has been utilized in multiple international cybersecurity exercises. For more detailed information, refer to the project documentation repository: https://github.com/LiuYuancheng/Land_Based_Railway_Simulation_Cyber_Range_Document
 
-Dolibarr ERP & CRM is a modern software package that helps manage your organization's activities (contacts, quotes, invoices, orders, stocks, agenda, human resources, ecm, manufacturing…).
+**1.2.2 Background of the Dolibarr ERP & CRM Software**
 
-It's an Open-Source Software suite (written in PHP with JavaScript enhancements) designed for small, medium or large companies, foundations and freelancers. For the detail introduction please refer to the Dolibarr official repo: https://github.com/Dolibarr/dolibarr
+Dolibarr ERP & CRM is a modern and modular open-source ERP and CRM solution designed to manage a wide range of organizational activities, including contacts, invoicing, orders, inventory, scheduling, and human resources.
+
+Developed primarily in PHP with JavaScript enhancements, Dolibarr is suitable for organizations of various sizes—from small businesses to large enterprises, as well as foundations and freelancers. Its modular architecture, ease of deployment, and active open-source community make it an ideal choice for rapidly building a realistic enterprise IT environment within a cyber range. For more details, refer to the official repository: https://github.com/Dolibarr/dolibarr
 
 
 
@@ -55,16 +59,15 @@ It's an Open-Source Software suite (written in PHP with JavaScript enhancements)
 
 #### 2.1 Architecture and Functions Overview
 
-The Land Based Railway Cyber Range System Follows the  ISA-95/IEC62264 System architecture as shown below, and the Dolibarr  ERP system in configured in the `Level 4 Enterprise Zone` which provide the service for the company's staffs.  
+The Land-Based Railway Cyber Range System is designed in accordance with the ISA-95 / IEC 62264 architecture as shown below six layers ISA-95 structure diagram. Within this architecture, the Dolibarr ERP & CRM system is deployed in the Level 4 Enterprise Zone, where it serves as the company internal platform for business operations included the services to staff such as human resources management, administrative workflows, and financial operations. And the cyber exercise can configure different vulnerabilities and attack entry points that may propagate to lower OT layers. 
 
 ![](img/s_03.png)
 
-With some auto user simulation scripts provide by the Cluster User Simulator (Script) This IT-network cyber range project will simulate the normal corporate network of the railway company with several different kinds of staff's daily work such as IT-Support-Engineer, Officer Staff, Railway HQ operator, Train driver / safety checker. The main components includes: 
+To enhance realism, the cyber range incorporates automated user behavior through the Cluster User Simulator (script-based engine). These simulation scripts generate dynamic and continuous activities across the IT network, mimicking the daily operations of various railway company roles such IT-Support-Engineer, Officer Staff, Railway HQ operator, Train driver / safety checker. The main components of this architecture include:
 
-- Railway company corporate network environment (virtualize the railway company infrastructure: network, computer, node, firewall, router, switches)
-- Railway company staff activities auto generator (virtual the railway company staff: IT-Support-Engineer, Officer Staff, Railway HQ operator, Train driver / safety checker, maintenance engineer)
-
-
+- **Railway Corporate Network Environment**: A virtualized infrastructure that replicates enterprise-grade network elements, including servers, endpoints, firewalls, routers, and switches.
+- **Railway ERP system**: The ERP system with the main function of HRM, customer relationship, financial, ticketing and company event.
+- **Staff Activity Simulation Engine**: An automated user activity generator that emulates realistic user behavior, producing network traffic and system interactions across different roles.
 
 #### 2.2 System Network Configuration 
 
