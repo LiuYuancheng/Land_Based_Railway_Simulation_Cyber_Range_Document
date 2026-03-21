@@ -191,7 +191,9 @@ This section is more related to add the information and enable the function modu
 - https://wiki.dolibarr.org/index.php/User_documentation
 - https://www.dolibarr.org/dolibarr-tutorial-videos.php
 
-Log in using the **admin account** created in the previous section to access the setup dashboard.
+Log in using the **admin account** created in the previous section to access the setup dashboard. The main function I configured is shown in the below diagram:
+
+![](img/s_07.png)
 
 #### 4.1 Configure Company Information
 
@@ -301,7 +303,7 @@ Purchase and download the required module and Install following: https://wiki.do
 
 ![](img/s_27.png)
 
-Afther this stage, the ERP system is fully configured to simulate a railway company’s enterprise IT environment. It includes:
+After this stage, the ERP system is fully configured to simulate a railway company’s enterprise IT environment. It includes:
 
 - Realistic organizational structure and user roles
 - HR, CRM, and financial workflows
@@ -314,3 +316,4 @@ This completes the ERP setup for the cyber range, transforming it into a **dynam
 
 ------
 
+>  last edit by LiuYuancheng (liu_yuan_cheng@hotmail.com) by 20/03/2026 if you have any problem, please send me a message. 
