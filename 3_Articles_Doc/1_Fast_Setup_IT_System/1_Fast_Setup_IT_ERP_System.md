@@ -122,7 +122,7 @@ sudo dpkg -i dolibarr_x.y.z-w.w_all.deb
 
 If dependency issues occur, resolve them with:
 
-```
+```bash
 sudo apt-get install -f
 ```
 
@@ -130,13 +130,13 @@ sudo apt-get install -f
 
 On the database VM, install and secure MySQL (or MariaDB):
 
-```
+```bash
 sudo mysql_secure_installation
 ```
 
 Log in to the database:
 
-```
+```bash
 sudo mysql -u root -p
 ```
 
@@ -164,7 +164,7 @@ Restart the database service `sudo systemctl restart mysql` and  ensure port 330
 
 By default, Dolibarr assumes the database is hosted locally. In a multi-VM setup, you must manually update the configuration. Edit the Dolibarr configuration file on the front-end VM:
 
-```
+```bash
 sudo vim /etc/dolibarr/conf.php
 ```
 
@@ -186,21 +186,28 @@ Now the Dolibar is ready for using in the cyber range. We need to fill in some s
 
 ### 4. Configure the Dolibarr Function Models
 
-This section is more related to add the information and enable the function modules used in the railway company via the Admin Dashboard. You can refer to the usage manual https://wiki.dolibarr.org/index.php/User_documentation and the https://www.dolibarr.org/dolibarr-tutorial-videos.php to learn how to use it. I only introduce some basic configuration I did in this section. Login with the admin credential you configured in the previous section to get to the setup dashboard.
+This section is more related to add the information and enable the function modules of the Dolibarr ERP & CRM system used in the railway company via the admin dashboard. For detailed usage guidance, you may refer to the official documentation and tutorials:
 
-#### 4.1 Setup the Company Information
+- https://wiki.dolibarr.org/index.php/User_documentation
+- https://www.dolibarr.org/dolibarr-tutorial-videos.php
 
-Now we need to customized the company's ERP system, got to setup -> Company Origination page as shown below, fill in all the railway company general information such as address, official email, Fax, PH, Web URL, upload the company logo.
+Log in using the **admin account** created in the previous section to access the setup dashboard.
+
+#### 4.1 Configure Company Information
+
+Navigate to **Setup → Company/Organization** then fill in essential information such as Company name, Address and contact details, Official email and website, Phone and fax and Upload company logo as shown below:
 
 ![](img/s_09.png)
 
-Then go to the "Display" part to modify the CSS style as shown below: 
+Next, Go to **Display settings** to adjust the UI appearance customize themes, layout, and CSS styles as shown below:
 
 ![](img/s_10.png)
 
-If you want the user's account more easy to be attacked during the cyber attack, you can go to the security setting to disable some of the security setting such as the password format as shown below, then the user can use simple password such 123456 and during cyber exercise, the misconfigured user account can be used as a weakness point for the attacker to get in the system to cause the information leakage. 
+For cybersecurity training and exercise purposes, you may intentionally weaken certain security controls by navigate to **Security Settings** as shown below:
 
 ![](img/s_11.png)
+
+This allows the use of weak credentials (e.g., `123456`), which can later serve as **attack entry points** during exercises.
 
 After setup the company Information then the main portal login page will be like this with the company name and logo and overview image:
 
@@ -208,34 +215,32 @@ After setup the company Information then the main portal login page will be like
 
 
 
-#### 4.2 Setup the HR System for the Company 
+#### 4.2 Configure Human Resource (HR) Modules
 
-We can add user group for the simulated railway company now as the "Users & Groups" is the default module, but before that we need to active some HR management modules, from setup -> Modules/Application active the modules as shown below 
+Navigate to **Setup → Modules/Applications** to active the below modules: 
+
+- **Leave Request Management** – manage staff leave applications and approvals
+- **Expense Reports** – simulate reimbursement workflows
+- **Recruitment** – manage job postings and hiring processes
+- **Human Resource Management** – core employee management tools
 
 ![](img/s_14.png)
 
-- "Leave request management": Added the different type of leave for different group (manager, staff, engineer)
-- "Expense report ": Set the report track and rules so we can build the report diagram after we add in different type of staff/user.
-- Recruitment : for public the job position and the job application approval process. 
-- Human resource management : the module for manage all the tools for people.
-
-After finished configuration, we can add a new staff such as staff_alice as a OCC operator then link her permission to HR system as shown below, 
+Next, create users and assign roles for the staff's accounts (e.g., `staff_alice` as an OCC operator) and assign permissions based on job roles as shown below:
 
 ![](img/s_15.png)
 
-Now we login Alice account and we can help her apply leave:
+Now we login Alice account and submit a leave request:
 
 ![](img/s_16.png)
 
-Then we go back the admin user (as alice report to admin), then under the leaves tab we can see the new leave request and approval it as shown below:
+Then log back in as admin/manager to review and approve Alice's leave request we created just now:
 
 ![](img/s_17.png)
 
+#### 4.3 Configure Customer Relationship Management (CRM)
 
-
-#### 4.3 Configure the Customer Relationship Management 
-
-As the railway company need to get feed back from the customer so we also enable the Third Part and the Ticket System for customer to report the abnormal scenario of feed back the service as shown below:
+To simulate passenger interaction and service feedback, enable CRM-related modules Third Parties (Customers) and Ticket System for customer to report the abnormal scenario of feed back the service as shown below:
 
 ![](img/s_18.png)
 
@@ -243,59 +248,67 @@ In the ticket system, we need to configure the public service interface so the p
 
 ![](img/s_19.png)
 
-After that the passengers can access the ticket system page
+After that the passengers can access the ticket system page as shown below:
 
 ![](img/s_20.png)
 
+This module is particularly useful for simulating the external attack surfaces, Input validation vulnerabilities and Social engineering scenarios. 
 
+#### 4.4 Configure Financial Modules
 
-#### 4.4 Configure the Financial Modules
-
-In this section as we are simulation, so we only active the salaries, then set the salary for each staff as shown below:
+For simulation purposes, only essential financial features are required. I enabled the Salary Management section:
 
 ![](img/s_21.png)
 
-After that we can go the the admin or user under financial group to help create new salary for the staff "test user " we the regular payment configuration as shown below:
+After that we can go the the admin or user under financial group to assign salaries to staff and simulate payroll as shown below:
 
 ![](img/s_22.png)
 
+#### 4.5 Configure Multi-Module Tools and Integration
 
+To improve scalability and realism, enable supporting tools:
 
-#### 4.5 Configure multi modules tools
-
- In the multi-module tools we setup the data import and export so we can export the data to build IT ERP system for other cyber range without from the beginning steps.
+- **Data Import/Export** : Allows reuse of ERP datasets across multiple cyber range deployments
+- **AI Integration**: Connect to local AI services (e.g., via Ollama)
+- **Email Configuration** : Configure SMTP using services like Gmail or Outlook https://wiki.dolibarr.org/index.php/Setup_EMails. 
+- **Collaboration Tools** : Enable event/calendar module
 
 ![](img/s_23.png)
 
- Then we also enable AI with custom AI service provided then we can link the function to the local GPU with Ollama service. 
+To enable AI with custom AI service provided then we can link the function to the local GPU with Ollama service. 
 
 ![](img/s_24.png)
-
-For the email as Dolibarr recommand GMAIL or Outlook service, so current I follow this instruction  https://wiki.dolibarr.org/index.php/Setup_EMails to setup use the smtp.gmail.com directly. 
 
 For the collaborative work I only active he event collaboration as show below: 
 
 ![](img/s_25.png)
 
-Then as admin we can create a event such as brief session and assign the attendance for different railway staff by add them in the callandar event:
+Then as admin we can create a event such as a brief session and assign the attendance for different railway staff by add them in the calendar event:
 
  ![](img/s_28.png)
 
-Now we almost have all the module we need, then the next step is to fill in the staff information, we can use AI to generate the staff information. Then to use the python script to generate a action in the ERP system such as apply leave in the HR system, we need to use the lib https://pypi.org/project/dolibarr/
+Now we almost have all the module we need, then the next step is to fill in the staff information, we can use AI to generate the staff information. To use the python script to generate a action in the ERP system such as apply leave in the HR system, we need to use the lib https://pypi.org/project/dolibarr/
 
 Then we follow the example in this link https://wiki.dolibarr.org/index.php/Module_Web_Services_API_REST_(developer)#PHP to call the related API to generate the event or action. 
 
 
 
-#### 4.6 Configure Special function module 
+#### 4.6 Configure Advanced / Custom Modules
 
-If you want to setup some special function such as 2FA which not in the dolibarr, you may need to purchse the module from the dolistore https://www.dolistore.com/index.php?l=en, then purchase the module you want then down load the zip file then follow this guide to install it : 
+For extended functionality (e.g., **Two-Factor Authentication (2FA)**), you need to purchase the additional modules then download the zip file and installed from the Dolibarr marketplace: https://www.dolistore.com/index.php?l=en. 
 
-https://wiki.dolibarr.org/index.php/Module_TwoFactorAuth
+Purchase and download the required module and Install following: https://wiki.dolibarr.org/index.php/Module_TwoFactorAuth
 
 ![](img/s_27.png)
 
-Now we almost finish create the ERP IT system for the cyber range which user for cyber exercise. 
+Afther this stage, the ERP system is fully configured to simulate a railway company’s enterprise IT environment. It includes:
+
+- Realistic organizational structure and user roles
+- HR, CRM, and financial workflows
+- External interaction interfaces
+- Automation and AI-generated data
+
+This completes the ERP setup for the cyber range, transforming it into a **dynamic, interactive, and attackable IT environment** suitable for advanced cybersecurity exercises.
 
 
 
