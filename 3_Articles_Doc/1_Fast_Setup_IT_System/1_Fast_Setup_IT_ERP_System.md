@@ -97,73 +97,88 @@ All three VMs are connected through the corporate network router/switch, allowin
 
 ### 3. Install Dolibarr on Ubuntu VMs
 
-To install the Dolibarr System on Ubuntu VM, it provides the installation deb package : https://www.dolibarr.org/downloads.php, but when you download and install it, you may see the "connect to database failed" error after the step1 as shown below:
+To install the Dolibarr on Ubuntu System, the official web provides the installation `*.deb` package in the download link : https://www.dolibarr.org/downloads.php. But when you download and install it, you may see the "Connect to database failed" error after the step1 of the post install as shown below:
 
 ![](img/s_05.png)
 
-Use the below steps to solve the Dolibarr problem: 
+This section provides a structured approach to installing and configuring Dolibarr across multiple VMs (front-end, database, and file server), along with troubleshooting steps to resolve this issue.
 
-To install Dolibarr on Ubuntu, set up a LAMP stack (Apache, MySQL, PHP), download the latest .deb package from Dolibarr's website, and install it using sudo dpkg -i dolibarr_x.y.z-w.w_all.deb. Finally, navigate to http://localhost/dolibarr to complete the configuration via the web-based installer. 
-**Install LAMP Server**
-Before installing Dolibarr, install Apache, MySQL/MariaDB, and PHP: 
+**3.1 Install LAMP Stack (Front-End VM)**
 
-```
+Before installing Dolibarr, ensure the front-end VM has a complete LAMP stack (Apache, PHP, and database client libraries):
+
+```bash
 sudo apt update
-sudo apt install apache2 mariadb-server php libapache2-mod-php php-mysql php-curl php-intl php-gd php-json php-mbstring
+sudo apt install apache2 mariadb-server php libapache2-mod-php php-mysql php-curl php-intl php-gd php-json php-mbstring -y
 ```
 
-**Download and Install Dolibarr** 
-Download the latest Debian/Ubuntu package (.deb) from the official Dolibarr wiki or SourceForge.
-Install it using the terminal:
+**3.2 Download and Install Dolibarr**
 
-```
+Download the latest `.deb` package from the sourceforge website: https://sourceforge.net/projects/dolibarr/files/Dolibarr%20installer%20for%20Debian-Ubuntu%20%28DoliDeb%29/, then Install the package using:
+
+```bash
 sudo dpkg -i dolibarr_x.y.z-w.w_all.deb
 ```
 
-If the command fails due to missing dependencies, run:
+If dependency issues occur, resolve them with:
 
 ```
 sudo apt-get install -f
 ```
 
-**Configure MySQL Database in the backend VM.** 
+**3.3 Configure Database Server (Back-End VM)**
 
-To make the installation easier, it use the same installation file, then I will modify the front end dolibarr application configuration file point to the backend data base
-Secure your installation:
+On the database VM, install and secure MySQL (or MariaDB):
 
 ```
- sudo mysql_secure_installation
+sudo mysql_secure_installation
 ```
 
-Log in to MySQL: 
+Log in to the database:
 
 ```
 sudo mysql -u root -p
 ```
 
-Create the database and user:
+Create the Dolibarr database and user:
 
-```
+```mysql
 CREATE DATABASE dolibarr;
-CREATE USER 'dolibarruser'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON dolibarr.* TO 'dolibarruser'@'localhost';
+CREATE USER 'dolibarruser'@'%' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON dolibarr.* TO 'dolibarruser'@'%';
 FLUSH PRIVILEGES;
 EXIT;
 ```
 
-If you setup in one ubuntu machine, you can skip this step: `sudo vim the /etc/dolibar/conf.php` file to point the application to the data base. Replace the localhost with the database VM's IP address as high light in the below image:
+Use `'%'` instead of `'localhost'` to allow remote connections from the front-end VM.
+
+Ensure the database server is configured to accept remote connections by editing  `/etc/mysql/mariadb.conf.d/50-server.cnf` and setting:
+
+```bash
+bind-address = 0.0.0.0
+```
+
+Restart the database service `sudo systemctl restart mysql` and  ensure port 3306 is open between VMs (firewall/security group).
+
+**3.4 Configure Dolibarr to Use Remote Database**
+
+By default, Dolibarr assumes the database is hosted locally. In a multi-VM setup, you must manually update the configuration. Edit the Dolibarr configuration file on the front-end VM:
+
+```
+sudo vim /etc/dolibarr/conf.php
+```
+
+Locate the database host setting and replace `localhost` with the **IP address of the database VM**, as shown below:
 
 ![](img/s_06.png)
 
-Make sure the backend server's port `3306` is opened 
+**3.5 Complete Installation via Web Interface**
 
-**Finalize via Web Installer** 
-
-Open your browser and navigate to http://localhost/dolibarr or http://your_server_ip/dolibarr. Redo the step1 to fill in the information then you will see the error will be cleared and you can access the main ERP web portal configuration page as shown below:
+Once configuration is complete, open a browser and navigate to `http://localhost/dolibarr` or `http://<frontend_vm_ip>/dolibarr`, Redo the step1 to fill in the information then you will see the error will be cleared as shown below:
 
 ![](img/s_07.png)
 
-Now the Dolibar is ready for using in the cyber range. Now we need to enable the function modules such as the HRM system the Leaving system so it can be fix the role of a ERP system in a railway company. And we also need to fill in some staff information.
+Now the Dolibar is ready for using in the cyber range. We need to fill in some staff information and enable the function modules such as the HRM system and the leaving system so it can be fix the role of a ERP system in a railway company.
 
 
 
