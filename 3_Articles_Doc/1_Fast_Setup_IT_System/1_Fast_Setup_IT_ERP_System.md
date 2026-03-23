@@ -23,6 +23,22 @@ As shown in the 6 layers (level0-5) of ISA-95/IEC62264 system architecture, the 
 
 [TOC]
 
+- [Fast Way to Setup an ERP(IT) System For the Critical Infra Cyber Range [ Land Based Railway System ]](#fast-way-to-setup-an-erp-it--system-for-the-critical-infra-cyber-range---land-based-railway-system--)
+    + [1. Introduction](#1-introduction)
+      - [1.1 Abstract](#11-abstract)
+      - [1.2 Background Information](#12-background-information)
+    + [2. System Architecture](#2-system-architecture)
+      - [2.1 Architecture and Functions Overview](#21-architecture-and-functions-overview)
+      - [2.2 System Network Configuration](#22-system-network-configuration)
+    + [3. Install Dolibarr on Ubuntu VMs](#3-install-dolibarr-on-ubuntu-vms)
+    + [4. Configure the Dolibarr Function Models](#4-configure-the-dolibarr-function-models)
+      - [4.1 Configure Company Information](#41-configure-company-information)
+      - [4.2 Configure Human Resource (HR) Modules](#42-configure-human-resource--hr--modules)
+      - [4.3 Configure Customer Relationship Management (CRM)](#43-configure-customer-relationship-management--crm-)
+      - [4.4 Configure Financial Modules](#44-configure-financial-modules)
+      - [4.5 Configure Multi-Module Tools and Integration](#45-configure-multi-module-tools-and-integration)
+      - [4.6 Configure Advanced / Custom Modules](#46-configure-advanced---custom-modules)
+
 ------
 
 ### 1. Introduction
@@ -279,7 +295,7 @@ To enable AI with custom AI service provided then we can link the function to th
 
 ![](img/s_24.png)
 
-For the collaborative work I only active he event collaboration as show below: 
+For the collaborative work I only active the event collaboration as show below: 
 
 ![](img/s_25.png)
 
