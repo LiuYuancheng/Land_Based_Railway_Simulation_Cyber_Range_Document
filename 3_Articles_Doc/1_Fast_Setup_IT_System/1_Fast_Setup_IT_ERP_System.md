@@ -1,5 +1,7 @@
 # Fast Way to Setup an ERP(IT) System For the Critical Infra Cyber Range [ Land Based Railway System ]
 
+
+
 **Project Design Purpose** : For the cyber range/twin (such as Power Grid, Airport Runway, Traffic Lights) used in the attack and defense cyber exercise, most of time the Red/Blue/Yellow Teams focus more on the Operational Technology (OT) system, but some times there are also requirements for building a simple company IT system (such as the internal ERP & HR service) to simulate the attack initial access through weaknesses in the corporate IT network before pivoting into OT networks such as  IT-to-OT attack chains, credential compromise, lateral movement, and exploitation of misconfigured enterprise services.
 
 ![](img/s_01.png)
