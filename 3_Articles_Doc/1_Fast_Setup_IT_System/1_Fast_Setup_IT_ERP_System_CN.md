@@ -26,6 +26,22 @@
 
 [TOC]
 
+- [Fast Way to Setup an ERP(IT) System For the Critical Infra Cyber Range [ Land Based Railway System ]](#fast-way-to-setup-an-erp-it--system-for-the-critical-infra-cyber-range---land-based-railway-system--)
+    + [1. 項目簡介](#1-----)
+      - [1.1 摘要](#11---)
+      - [1.2 背景信息](#12-----)
+    + [2. 系统架构](#2-----)
+      - [2.1 架构与功能概述](#21--------)
+      - [2.2 系统网络配置](#22-------)
+    + [3. 在Ubuntu虚拟机上安装Dolibarr](#3--ubuntu------dolibarr)
+    + [4. 配置Dolibarr功能模块](#4---dolibarr----)
+      - [4.1 配置公司信息](#41-------)
+      - [4.2 配置人力资源（HR）模块](#42--------hr---)
+      - [4.3 配置客户关系管理 (CRM)](#43-----------crm-)
+      - [4.4 配置财务模块](#44-------)
+      - [4.5 配置多模块工具和集成](#45-----------)
+      - [4.6 配置高级/自定义模块](#46-----------)
+
 ------
 
 ### 1. 項目簡介
@@ -290,3 +306,44 @@ sudo vim /etc/dolibarr/conf.php
 ![](img/s_25.png)
 
 然后作为管理员，我们可以创建一个事件，例如简报会议，并通过将其添加到日历事件中来为不同的铁路员工分配出席人员：
+
+ ![](img/s_28.png)
+
+现在我们几乎拥有一个简单铁路公司所需的所有模块，下一步是填写员工信息，我们可以使用 AI 生成员工信息。要使用 Python 脚本在 ERP 系统中生成操作，例如在 HR 系统中申请请假，我们需要使用库 https://pypi.org/project/dolibarr/
+
+```python
+ from dolibarr import Dolibarr
+ api_url = 'http://your-url/dolibarr/htdocs/api/index.php/'
+ api_key = 'custom_API-Key'
+ # Connection to dolibarr
+ dolibarr_inst = Dolibarr(api_url, api_key)
+```
+
+然后我们按照此链接中的示例 https://wiki.dolibarr.org/index.php/Module_Web_Services_API_REST_(developer)#PHP 调用相关 API 来生成事件或操作。
+
+#### 4.6 配置高级/自定义模块
+
+为了扩展功能（例如，**双因素认证 (2FA)**），您需要购买额外的模块，然后下载 zip 文件并从 Dolibarr 市场安装：https://www.dolistore.com/index.php?l=en。
+
+购买并下载所需模块，然后按照以下说明安装：https://wiki.dolibarr.org/index.php/Module_TwoFactorAuth
+
+![](img/s_27.png)
+
+在此阶段之后，ERP 系统已完全配置，可以模拟铁路公司的企业 IT 环境。它包括：
+
+- 真实的组织结构和用户角色
+- HR、CRM 和财务工作流程
+- 外部交互接口
+- 自动化和 AI 生成的数据
+
+这完成了网络靶场的 ERP 设置，将其转变为一个**动态、交互式且可攻击的 IT 环境**，适用于高级网络安全演练。
+
+
+
+Thanks for spending time to check the article detail, if you have any question and suggestion or find any program bug, please feel free to message me. Many thanks if you can give some comments and share any of the improvement advice so we can make our work better ~
+
+
+
+------
+
+>  最后编辑者：LiuYuancheng (liu_yuan_cheng@hotmail.com)，日期：2026/03/20。如有任何问题，请给我留言。
