@@ -34,13 +34,17 @@ Although this case study is implemented entirely within a software-based cyber r
 
 ### 1. Introduction
 
-A cyberattack on Taiwan’s high speed rail network forced multiple trains into emergency stops after a university student allegedly hacked into the railway’s radio communication system in  April 2026. This case study project will replicate the cyber attack scenario on OT level by focus on demonstrating the attack workflow, vulnerability exploitation process, operational impact, attack path, and related technologies used in the simulation environment (Land-Based Railway OT Simulation Cyber Twin). The study also highlights how OT cyber ranges can support cybersecurity training, incident response exercises, attack analysis, and defensive capability validation for railway operators and security teams.
+In April 2026, Taiwan’s high-speed railway system experienced a significant cybersecurity incident when multiple trains were forced into emergency stop conditions after a spoofing attack targeted the railway radio communication network. According to public reports, the attack was allegedly conducted by a 23 years old university student using low-cost Software-Defined Radio (SDR) equipment to analyze and inject unauthorized wireless communication signals into the railway operational system. The incident demonstrated how modern railway infrastructure can be affected by cyberattacks targeting Operational Technology (OT) communication systems and highlighted the growing cybersecurity risks faced by critical transportation infrastructure.
 
-#### 1.1 Summary of the Cyber Attack and Accident 
+This case study project aims to replicate/simulate a similar cyberattack scenario within the controlled OT cyber range platform **Land-Based Railway OT Simulation Cyber Twin**. The objective of the project is not to reproduce the real-world incident exactly, but to demonstrate the possible attack workflow, vulnerability exploitation process, operational impact, attack path, and related technologies involved in a railway False Data Injection (FDI) and spoofing attack scenario. The project also demonstrates how railway OT cyber ranges can be used for cybersecurity research, professional training, incident response exercises, attack analysis, and defensive capability validation for railway operators and cybersecurity teams.
+
+
+
+#### 1.1 Summary of the Cyber Attack and Incident
+
+A 23-year-old university student and radio enthusiast, identified by the surname Lin, was arrested for allegedly conducting a sophisticated spoofing attack against the Taiwan High Speed Rail (THSR) system during the Qingming Festival holiday period in April 2026: 
 
 ![](Case0_img/s_02.png)
-
-A 23-year-old university student and radio enthusiast, identified by the surname Lin, was arrested for a sophisticated "spoofing" attack on the Taiwan High Speed Rail (THSR) system during the Qingming Festival holiday in April 2026.  
 
 **1.1.1 Key Details of the Incident**
 
@@ -51,7 +55,9 @@ A 23-year-old university student and radio enthusiast, identified by the surname
 
 **1.1.2 incident Aftermath**
 
-The incident has sparked a national security debate in Taiwan regarding the vulnerability of critical infrastructure to "pranks" or attacks using inexpensive, widely available hardware. The Ministry of Transportation has since ordered a comprehensive security review and hardening of communication systems for all rail and metro operators.  
+The incident triggered significant public and governmental concern regarding the cybersecurity resilience of critical transportation infrastructure against low-cost and widely accessible attack technologies. Following the event, Taiwan transportation authorities initiated comprehensive reviews of railway and metro communication systems, focusing on improving authentication mechanisms, encryption, parameter management, and wireless communication security hardening.
+
+This event also highlighted how cyberattacks targeting OT communication systems can directly affect railway operational safety, train scheduling, passenger services, and emergency response procedures.
 
 **1.1.3 Reference Link** 
 
@@ -60,17 +66,33 @@ The incident has sparked a national security debate in Taiwan regarding the vuln
 
 
 
-#### 1.2 Introduction of Land-Based Railway Cyber Twin platform
+#### 1.2 Introduction to the Land-Based Railway Cyber Twin Platform
+
+As described in the incident summary, the spoofing attack primarily targeted the railway train control communication process by cloning legitimate radio communication data and injecting false alarm messages into the operational environment. To demonstrate this type of cyberattack safely, the **Land-Based Railway Cyber Twin** platform is used to simulate the railway OT environment and replicate the attack scenario. The system interface overview is shown below:
 
 ![](Case0_img/s_03.png)
 
-As shown in the Summary of the Cyber Attack and Accident, the cyber attack will aim to the train control center (OCC) by focusing on cloned a radio report data and send the message to trigger an alarm. I will use the  Land-Based Railway Cyber Twin platform to simulate the attack scenario. 
+**1.2.1 Cyber Twin System architecture** 
 
-The Land Based Railway Simulation Cyber Twin System is a fully digital distributed cyber security platform software to simulate all SIX different levels OT and IT environment of a railway system. It provides the simulation modules from pure railway OT system such as the physical track signaling systems, railway ATC and ATP system and station control system with the real OT protocols. The Cyber Twin's ISA-95/IEC-62264 Architecture is shown below:
+The **Land-Based Railway Simulation Cyber Twin System** is a fully software-based distributed cybersecurity simulation platform designed to emulate all six ISA-95/IEC-62264 IT and OT layers of a modern railway system. The platform includes simulation modules for multiple railway operational subsystems, including:
+
+- Railway track fixed-block signaling systems
+- Railway 3rd Track Power System
+- Automatic Train Control (ATC) systems
+- Automatic Train Protection (ATP) systems
+- Railway Radio Communication System
+- Railway station control systems
+- Train dispatch and operational control center (OCC) systems
+- Human-Machine Interface (HMI) monitoring systems
+- Industrial communication protocols and field device simulations
+
+The ISA-95 / IEC-62264 system architecture implementation of the railway cyber twin platform is shown below:
 
 ![](Case0_img/s_04.png)
 
-The Cyber range has been used in several international cyber exercise and professional training for more detail please refer to below document: 
+**1.2.2 Detailed System Introduction Document**
+
+The railway cyber range has been used in multiple international cybersecurity exercises, professional training programs, and OT security research projects. Additional project details and related technical references are available in the following documents:
 
 - https://github.com/LiuYuancheng/Land_Based_Railway_Simulation_Cyber_Range_Document
 - [Use PLC to Implement Land Based Railway Track Fixed Block Signaling OT System](https://www.linkedin.com/pulse/use-plc-implement-land-based-railway-track-fixed-block-yuancheng-liu-saaec)
@@ -88,11 +110,16 @@ The Cyber range has been used in several international cyber exercise and profes
 
 ### 2. Spoofing Attack Analysis
 
-#### 2.1 Attack MITRE ATT&CK framework mapping
+This section analyzes the Taiwan High Speed Rail (THSR) spoofing attack using the MITRE ATT&CK for ICS (Industrial Control Systems) framework and explains how a similar attack scenario can be replicated within the Land-Based Railway Simulation Cyber Twin System. The objective includes:
 
-This section will use the MITRE ATT&CK for ICS (Industrial Control Systems) framework to the analysis spoofing attack on the Taiwan High Speed Rail (THSR) in April 2026 and also show which actions will also be applied or implement on the  Land Based Railway Simulation Cyber Twin System. 
+- Understand the attacker’s workflow, identify the related ICS attack techniques. 
+- Demonstrate how False Data Injection (FDI) and signal spoofing attacks can affect railway Operational Technology (OT) environments.
 
-This attack is a classic example of **wireless exploitation** leading to **process disruption**. Below is the mapping of the attacker's steps to the relevant ATT&CK ICS tactics and techniques: 
+#### 2.1 MITRE ATT&CK for ICS Framework Mapping
+
+This section maps the reported THSR spoofing attack to the MITRE ATT&CK for ICS framework and identifies which attack techniques are implemented in the cyber twin simulation environment.
+
+The attack workflow consists of several stages, including wireless reconnaissance, communication exploitation, signal impersonation, false data injection, and operational disruption. The mapping diagram is shown below:
 
 ![](Case0_img/s_05.png)
 
@@ -106,16 +133,27 @@ This attack is a classic example of **wireless exploitation** leading to **proce
 | **Impair Process Control** | **T0855**        | **Unauthorized Command Message**           | Transmitted a high-priority "General Alarm" signal to the control center and trains. | Yes                  |
 | **Impact**                 | **T0879**        | **Damage to Property / Denial of Service** | Forced emergency braking on 4 trains, causing a 48-minute total operational shutdown. | Yes                  |
 
+Within the cyber twin environment, most of the attack stages can be replicated safely using simulated OT communication protocols, virtual RTUs, and software-defined signaling systems.
+
+
+
 #### 2.2 Replicated Attack Outline on Cyber Twin
 
-The key vector for the signal spoofing is inject false alarm data to the control center, so in our case study, we will also simulate the radio data injection from un-authorization device to the railway signal antenna. As the cyber range using network to simulate the wireless and radio link so the protocol we will attack will be the siemens-S7comm which can be used for OT device communication via network, 5G and radio link, the main attack vector will be a False Data injection attack on the related S7comm OT device (Radio Controller RTU). So the case study will show the 
+The primary attack vector in the reported spoofing incident was the injection of unauthorized alarm data into the railway communication system. Therefore, this case study focuses on simulating a similar False Data Injection (FDI) attack within the railway cyber twin platform. 
 
-- Signal Analysis: S7comm radio signals analysis and data unencrypt
-- Parameter Cracking: Generate the False data and transmit to the railway data collection antenna
-- Inject Unauthorized force data in the OT controller (RTU) and impact the OCC 
-- Trigger the OCC operational safe mechanism and cased the train emergency stop. 
+In the real-world incident, the attacker targeted wireless radio communication infrastructure using spoofed beacon signals. In the cyber range environment, the wireless and radio communication links are simulated using industrial OT communication protocols over IP networks. The protocol selected for this case study is **Siemens S7comm**, which is commonly used for industrial communication between PLCs, RTUs, SCADA systems, and distributed OT devices over Ethernet, wireless bridges, and industrial radio links.
 
-**2.2.1 Introduction of False Data Injection (FDI):**
+The replicated attack workflow consists of the following stages:
+
+- **Signal Analysis** : S7Comm radio signals analysis and data decryption.
+- **Parameter Cracking and Packet Construction** : Decode train data parameters and generate the false data packet. 
+- **False Data Injection**: Transmit unauthorized false operational packet to train data collection RTU via radio antenna. 
+- **Operational Impact on OCC** : Trigger abnormal operational states within the OCC and activate emergency protection logic. 
+- **Safety Mechanism Activation** : Demonstrate how the railway protection system responds to abnormal cased service disruption. 
+
+#### 2.3 Introduction of False Data Injection (FDI) Attack
+
+False Data Injection (FDI) is a cyberattack technique in which attackers intentionally inject manipulated or forged data into an Operational Technology (OT) system to influence system behavior, operational decisions, or automated control logic.
 
 - **Objective:** The main goal of FDI is to manipulate the data within the OT system, leading to incorrect or misleading information being processed by the control systems.
 - **Method:** Attackers inject false or manipulated data into the sensors or communication channels within the OT system. This can lead to the control systems making incorrect decisions based on the compromised data.
