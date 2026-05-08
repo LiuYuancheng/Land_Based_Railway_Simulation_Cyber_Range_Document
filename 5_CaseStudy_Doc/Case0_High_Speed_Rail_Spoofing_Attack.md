@@ -63,6 +63,7 @@ This event also highlighted how cyberattacks targeting OT communication systems 
 
 - https://gbhackers.com/taiwan-high-speed-rail-hit-by-spoofing-attack/
 - https://sqmagazine.co.uk/taiwan-student-high-speed-rail-cyberattack/
+- https://www.taipeitimes.com/News/taiwan/archives/2026/05/05/2003856781
 
 
 
@@ -163,24 +164,148 @@ False Data Injection (FDI) is a cyberattack technique in which attackers intenti
 
 ------
 
-### 3. Design of Radio Communication System in Cyber Twin
+### 3. Design of Radio Communication and Train Power System in Cyber Twin
 
-Before we start to introduce the attack path and technology I will simulated on the cyber twin, I will introduce how I designed the impacted sub-system in the cyber range so you know which part is the vulnerable part for the cyber attack. The impacted 2 sub system are the train power system (emergency stop) and the railway train data communication system. The two sub-system workflow diagram as shown below: 
+Before introducing the attack workflow and technologies used in this case study, it is important to first explain the design of the affected subsystems within the railway cyber twin platform. This helps illustrate which components are vulnerable to the spoofing and False Data Injection (FDI) attack and how the attack can propagate through the railway Operational Technology (OT) environment.
+
+The cyberattack scenario in this study primarily impacts two critical railway OT subsystems:
+
+- The **Railway Third-Track Power Supply System**, which is responsible for supplying electrical power to trains and supporting emergency stop operations.
+- The **Railway Radio Communication System**, which is responsible for transmitting operational train telemetry and status data between field devices and the Operational Control Center (OCC).
+
+The workflow and relationship between these two subsystems are shown in the diagram below:
 
 ![](Case0_img/s_06.png)
 
-#### 3.1 Design of Railway 3rd Track Power System
+In the simulation environment, the radio communication system acts as the primary attack target, while the train power control system becomes the impacted operational subsystem that causes the visible service disruption during the cyberattack exercise.
 
-As shown in the diagram, the 3rd Track along the train moving track will provide electrical power to the train. In the cyber twin I simulated the 750V DC power under the EN-50155 standard. The 3rd track is splitted to several continuous block (as shown in the diagram B01, B02, B03...) and the train use pantograph to connect to the blocks one by one to get power when it is running. 
+#### 3.1 Design of Railway Third-Track Power System
 
-Each block is linked to the 750V-DC transformer and the link will be controlled by a minorized control breaker/controllable Relay  (CR01, CR02, CR03.. ), each of the breaker will be linked to the third track control PLC 's output coil, so the PLC can one and off the power of each block. 
+As shown in the system architecture diagram, the railway trains receive electrical power through a simulated 750V DC third-track power system, which is implemented in the cyber twin according to the general concepts of the `EN-50155 railway electronic system standard`. The main components and design includes:
 
-The PLC is connect to the Railway OCC's Train remote control HMI via Modbus-TCP, so the OCC operator can remote cut-off and turn on the power supply to the train. During the emergency stop process, the the HMI will send the braker on to train remotely, if the train didn't reduce the speed, the operator can force cut off the power supply to the train to make the train stop.
+- The third track is divided into multiple continuous power blocks along the railway track sections labeled as `B01`, `B02`, `B03` ... ,  as the train moves along the track, it connects to these power blocks sequentially to receive electrical power. 
+- Each power block is connected to the main 750V DC transformer through a dedicated motorized control breaker or controllable relay module, represented as `CR01`, `CR02`, `CR03` ... These breakers simulate the real-world railway power isolation and protection mechanisms. 
+- Each controllable relay is connected to the output coils of the **Third-Track Block Power Control PLC**, allowing the PLC to remotely switch the power supply for each track section ON or OFF.
+- The Third-Track Power Control PLC communicates with the Railway Operational Control Center (OCC) through the Modbus-TCP industrial communication protocol. Through the OCC Train Monitor Human-Machine Interface (HMI), operators can remotely monitor and control the power state of each railway track block.
 
-The Power system will be the Impacted system which caused the service disruption. 
+During emergency stop operations, the OCC operator can issue remote braking commands to the train. If the train does not respond correctly or continues moving abnormally, the operator can forcibly isolate the power supply by remotely opening the corresponding third-track breaker.
+
+
 
 #### 3.2 Design of Railway Radio Communication System
 
-The Railway communication system will be the main targeted system of the spoofing attack. As shown in the diagram, the train will have one simulated data broadcast antenna to transmit the train current real time operational information (current speed, average spped, brake air pressure, input voltage, motor current, train motor RPM, radar state, time stamp ...) to the Radio antenna tower along next to the track. The data transmit follows the General S7 Message Structure (PDU) 
+The railway radio communication system is the primary target subsystem of the spoofing attack demonstrated in this case study.
 
-In the cyber twin along the track every fix distance will be a simulated data reviver tower to pick the trains operational information, all the tower will connect to the Radio Link data management RTU, then the RTU will send multiple trains information to the OCC via Siemens-S7comm protocol and the information will be processed and display on the train control HMI dashboard. 
+As shown in the architecture diagram, each simulated train contains a virtual wireless communication module and train broadcast antenna responsible for transmitting real-time operational telemetry information to track-side communication towers. The transmitted operational information includes : `Current train speed`, `Average train speed`, `Brake air pressure`, `Input power voltage`, `Motor current`, `Train motor RPM`, `Radar status` `Timestamp` and `Other train operational telemetry data`.  
+
+In the cyber twin platform, the communication data transmission follows a simulated **Siemens S7 Message Structure (Protocol Data Unit - PDU)** format to emulate industrial OT communication behavior commonly used in railway and industrial control environments.
+
+The main components and design includes:
+
+- Along the railway track, multiple simulated radio receiver towers are deployed at fixed distances to receive operational telemetry data from nearby trains. 
+- Each track-side radio receiver tower forwards the collected operational data to the **Radio Link Data Management RTU (Remote Terminal Unit)**. The RTU aggregates telemetry data from multiple trains and then transmits the operational information to the Railway OCC using the **Siemens S7comm industrial communication protocol**.
+- At the OCC level, the received telemetry information is processed and visualized through the **OCC Train Monitor HMI Dashboard**, where railway operators can observe real-time train operational status and system alarms.
+
+Because the OCC relies on the integrity and authenticity of this communication data to make operational decisions, the railway radio communication subsystem becomes a critical attack surface for spoofing and False Data Injection (FDI) attacks.
+
+
+
+------
+
+### 4. Attack Scenario and Demo
+
+This section will introduce the simulated spoofing attack scenario and show the demo of the attack on the cyber twin. 
+
+#### 4.1 Simulated Attack Scenario and Path on Cyber Twin
+
+The attack flow diagram is shown below:
+
+![](Case0_img/s_07.png)
+
+During the attack there will be eight stages: 
+
+- Step-T1 Eavesdrop Radio Signal : Create a data fetching program (radio receiver) to collect the traffic packet. 
+- Step-T2 Decode Parameters : Decode the S7 message from traffic data packet and find the useful parameter. 
+- Step-T3 Create False Train Data : Based on Step2 create the S7 message with false data (Train over speed ). 
+- Step-T4 Inject Spoofing Signal : Create a data upload program to inject the spoofing S7 data to the RTU via antenna. 
+- Step-T5 False Data Transfer to OCC HMI : OCC HMI connect to the RTU and fetch the false Train over speed data. 
+- Step-T6 Trigger Alarm Mechanisms : OCC HMI detect Train speed over up limitation, trigger the protection mechanism and send the action control command to PLC via Modbus-TCP bus
+- Step-T7 Emergency Stop Activated:  PLC send control signal to the motorized control breaker to cut off the power supply to 3rd track block B03. 
+- Step-T8 Train Emergency Stop : Power transmission cut off and train stop immediately. 
+
+
+
+#### 4.2 Cyber Attack Demo on Cyber Twin
+
+The cyber twin is configured in 21 VMs with in different networks as shown below and each attack steps and target VM are marked in the cyber twin network topology: 
+
+![](Case0_img/s_08.png)
+
+**4.2.1 Eavesdrop Radio Signal** 
+
+So simulate the Eavesdrop from the physical device, the attacker's VM will be setup in the Green Team subnet which is different from normal OT attack scenario.  I use the TCP dump program to simulate the Radio Signal Eavesdrop progress to save the data as PCAP. The TCP dump file will running in the Green team router.
+
+Use the below command bash file to record the traffic
+
+```bash
+#!/bin/bash
+now=$(date +'%Y%m%d')
+dumpfile="/home/router_admin/tcpdump/"$now"Tcpdump.pcap"
+nohup tcpdump -i any -w $dumpfile -C 500 -K -n -B 20000 &
+```
+
+
+
+**4.2.2 Decode S7 Message Parameters**
+
+The we use wire shark to decode the S7 Messages, as attacker know the message is a simulated S7 data so we use the filter to get the protocol match the ISO 8073/X.224 COTP as shown below: 
+
+![](Case0_img/s_09.png)
+
+Then from the data transmission message we got the data length and the some data simple as shown below:
+
+![](Case0_img/s_10.png)
+
+But as attacker, it is hard to identify what's the data's meaning, he select a simple one 8 bytes data which appear frequently. Then  in the real incident as the THSR device was not updated for 19 years, here we make an assumption that there are already some signaling sequence information leaked to the public. 
+
+Based on the leaked secret message and the data change frequency the attack try to decode the below type of message as shown below:
+
+```
+S7 Communication
+    Header: (Ack_Data)
+        Protocol Id: 0x32
+        ROSCTR: Ack_Data (3)
+        Redundancy Identification (Reserved): 0x0000
+        Protocol Data Unit Reference: 38400
+        Parameter length: 2
+        Data length: 12
+        Error class: No error (0x00)
+        Error code: 0x00
+    Parameter: (Read Var)
+        Function: Read Var (0x04)
+        Item count: 1
+    Data
+        Item [1]: (Success)
+            Return code: Success (0xff)
+            Transport size: BYTE/WORD/DWORD (0x04)
+            Length: 8
+            Data: 0000006402ec0096
+```
+
+The 8 bytes data sequence is : Train's Front Sensor Trigger State(2Bytes Bool), Train Speed (2Bytes Int), Train Motor Voltage [V] (2Bytes Int), Train Operate Current [A] (2Bytes Int)
+
+For example in the Packet Example, data `0000006402ec0096` 
+
+- `0000` : Front Sensor is not triggered, not detect front train in alert distance 
+- `0064`: Train current speed 100km/h 
+- `02ec`: Train motor input voltage is 750 V -DC 
+- `0096`: Train motor operation current is 150 A
+
+
+
+**4.2.3 Create False Train Speed Data And Inject to Antenna**
+
+As shown in the network topology, the radio antenna simulator VM's IP address is 10.10.10.21, now the attacker make a attack script to keep sending high frequency false data to the radio antenna simulator VM to overwrite the correct data. Based on the packet 01 shown in the previous section, he find that the train Index is mapping to the same data block index of the RTU. So he can build a S7Comm message sending program . 
+
+He I use the S7Comm communication lib develop in the RTU simulator project https://github.com/LiuYuancheng/PLC_and_RTU_Simulator/tree/main/S7Comm_RTU_Simulator to build the attack script: 
+
