@@ -6,17 +6,17 @@ The idea for this case study was inspired by the report “**Taiwan High Speed R
 
 ![](Case0_img/s_01.png)
 
-In this case study, the Land-Based Railway OT Simulation Cyber Twin I developed is used to simulate a similar cybersecurity scenario in a controlled cyber range environment. The objective is not to create a one-to-one replication of the real-world incident, but to demonstrate how a False Data Injection (FDI) and spoofing attack could impact railway OT operations, train signaling logic, and automated safety mechanisms within a software-defined railway cyber twin platform.
+In this case study, the Land-Based Railway OT Simulation Cyber Twin I developed is used as controlled cyber range environment to simulate the similar cyber attack scenario. The objective is not to create a one-to-one replication of the real-world incident, but to demonstrate how a spoofing attack (False Data Injection) could impact the railway OT operations, train signaling logic, and automated safety mechanisms within a software-defined railway cyber twin platform.
 
-The article is organized into the following sections:
+The article is organized into the following five sections:
 
-- A brief summary of the reported spoofing attack incident involving the Taiwan High Speed Rail system.
-- An introduction to the simulated railway radio communication system implemented in the Land-Based Railway Cyber Twin platform.
-- The design methodology used to replicate a similar spoofing attack scenario within the cyber range environment.
-- A detailed demonstration of the False Data Injection (FDI) spoofing attack, including the attack process, operational impact, and incident progression during the cyber exercise.
-- Discussion of possible detection methods, defensive mechanisms, and incident response strategies against this category of railway OT cyberattack.
+- A brief summary of the reported spoofing attack incident involving the Taiwan High Speed Rail.
+- An introduction of the simulated railway radio communication system implemented in the Cyber Twin platform.
+- The design methodology used to replicate the similar spoofing attack scenario.
+- A detailed demonstration of the False Data Injection (FDI) Spoofing attack with the attack process, operational impact, and incident progression.
+- Discussion of possible detection methods, defensive mechanisms, and incident response strategies. 
 
-Although this case study is implemented entirely within a software-based cyber range platform, it demonstrates how realistic railway OT attack scenarios can be reproduced safely for cybersecurity research and training purposes. The study also illustrates how OT cyber twins can help railway cybersecurity teams better understand attack behaviors, evaluate operational impact, and improve incident response readiness during cyber exercises.
+Although this case study is implemented entirely within a software-based OT cyber twin platform, it demonstrates how realistic railway OT attack scenarios can be reproduced safely for cybersecurity research and training purposes. The study also illustrates how OT cyber twins can help railway cybersecurity teams better understand attack behaviors, evaluate operational impact, and improve incident response readiness during cyber exercises.
 
 ```python
 # Author:      Yuancheng Liu
@@ -30,15 +30,38 @@ Although this case study is implemented entirely within a software-based cyber r
 
 [TOC]
 
+- [High Speed Rail Spoofing Cyber Attack Case Study : Use Cyber Twin to Simulate the Cyber Incident Happened in Taiwan High Speed Rail](#high-speed-rail-spoofing-cyber-attack-case-study---use-cyber-twin-to-simulate-the-cyber-incident-happened-in-taiwan-high-speed-rail)
+  * [1. Introduction](#1-introduction)
+    + [1.1 Summary of the Cyber Attack and Incident](#11-summary-of-the-cyber-attack-and-incident)
+    + [1.2 Introduction to the Land-Based Railway Cyber Twin Platform](#12-introduction-to-the-land-based-railway-cyber-twin-platform)
+  * [2. Spoofing Attack Analysis](#2-spoofing-attack-analysis)
+    + [2.1 MITRE ATT&CK ICS Framework Mapping](#21-mitre-att-ck-ics-framework-mapping)
+    + [2.2 Replicated Attack Outline on Cyber Twin](#22-replicated-attack-outline-on-cyber-twin)
+    + [2.3 Introduction of False Data Injection (FDI) Attack](#23-introduction-of-false-data-injection--fdi--attack)
+  * [3. Design of Radio Communication and Train Power System in Cyber Twin](#3-design-of-radio-communication-and-train-power-system-in-cyber-twin)
+    + [3.1 Design of Railway Third-Track Power System](#31-design-of-railway-third-track-power-system)
+    + [3.2 Design of Railway Radio Communication System](#32-design-of-railway-radio-communication-system)
+    + [3.3 Design of OCC Train Emergency Stop Function](#33-design-of-occ-train-emergency-stop-function)
+  * [4. Attack Scenario and Demo on Cyber Twin](#4-attack-scenario-and-demo-on-cyber-twin)
+    + [4.1 Simulated Attack Scenario and Attack Path on Cyber Twin](#41-simulated-attack-scenario-and-attack-path-on-cyber-twin)
+    + [4.2 Cyber Attack Demonstration on Railway Cyber Twin](#42-cyber-attack-demonstration-on-railway-cyber-twin)
+  * [5. Possible Attack Detection and Defensive Mechanisms](#5-possible-attack-detection-and-defensive-mechanisms)
+    + [5.1 Possible Detection Mechanisms](#51-possible-detection-mechanisms)
+    + [5.2 Possible Defensive Mechanisms](#52-possible-defensive-mechanisms)
+    + [5.3 Incident Response Actions](#53-incident-response-actions)
+  * [6. Summary](#6-summary)
+
+
+
 ------
 
 ### 1. Introduction
 
 In April 2026, Taiwan’s high-speed railway system experienced a significant cybersecurity incident when multiple trains were forced into emergency stop conditions after a spoofing attack targeted the railway radio communication network. According to public reports, the attack was allegedly conducted by a 23 years old university student using low-cost Software-Defined Radio (SDR) equipment to analyze and inject unauthorized wireless communication signals into the railway operational system. The incident demonstrated how modern railway infrastructure can be affected by cyberattacks targeting Operational Technology (OT) communication systems and highlighted the growing cybersecurity risks faced by critical transportation infrastructure.
 
-This case study project aims to replicate/simulate a similar cyberattack scenario within the controlled OT cyber range platform **Land-Based Railway OT Simulation Cyber Twin**. The objective of the project is not to reproduce the real-world incident exactly, but to demonstrate the possible attack workflow, vulnerability exploitation process, operational impact, attack path, and related technologies involved in a railway False Data Injection (FDI) and spoofing attack scenario. The project also demonstrates how railway OT cyber ranges can be used for cybersecurity research, professional training, incident response exercises, attack analysis, and defensive capability validation for railway operators and cybersecurity teams.
+This case study project aims to replicate/simulate a similar cyberattack scenario within the controlled OT cyber twin platform --**Land-Based Railway OT Simulation Cyber Twin**. The objective of the project is not to reproduce the real-world incident exactly, but to demonstrate the possible attack workflow, vulnerability exploitation process, operational impact, attack path, and related technologies involved in a railway False Data Injection (FDI) and spoofing attack scenario. The project also demonstrates how railway OT cyber ranges can be used for cybersecurity research, professional training, incident response exercises, attack analysis, and defensive capability validation for railway operators and cybersecurity teams.
 
-
+![](Case0_img/title.png)
 
 #### 1.1 Summary of the Cyber Attack and Incident
 
@@ -48,18 +71,18 @@ A 23-year-old university student and radio enthusiast, identified by the surname
 
 **1.1.1 Key Details of the Incident**
 
-- **The Attack:** Using consumer-grade **Software-Defined Radio (SDR)** equipment and tools purchased online, Lin analyzed the THSR’s radio signals. He managed to crack the system's parameters and "cloned" a legitimate beacon signal to send a high-priority **"General Alarm"** message to the control center.  
-- **The Impact:** The false alarm triggered safety protocols on **April 5, 2026, at 11:23 PM**, forcing three trains into immediate manual emergency stops. A fourth train was halted shortly after. The incident caused a total disruption of **48 minutes**, delaying hundreds of passengers returning from the holiday.  
-- **The Vulnerability:** Experts revealed that the student exploited weaknesses in the **TETRA radio system**, which THSR had used for 19 years without rotating its security parameters. Lin reportedly cracked multiple layers of verification mechanisms to send the unauthorized signal.  
+- **The Attack:** Using consumer-grade Software-Defined Radio (SDR) equipment and tools purchased online, Lin analyzed the THSR’s radio signals. He managed to crack the system's parameters and "cloned" a legitimate beacon signal to send a high-priority "General Alarm" message to the control center.  
+- **The Impact:** The false alarm triggered safety protocols on April 5, 2026, at 11:23 PM, forcing three trains into immediate manual emergency stops. A fourth train was halted shortly after. The incident caused a total disruption of 48 minutes, delaying hundreds of passengers returning from the holiday.  
+- **The Vulnerability:** Experts revealed that the student exploited weaknesses in the TETRA radio system, which THSR had used for 19 years without rotating its security parameters. Lin reportedly cracked multiple layers of verification mechanisms to send the unauthorized signal.  
 - **The Arrest:** Police traced the signal to Lin’s residence in Taichung, where they seized 11 handheld radios, an SDR receiver, and a laptop. He was released on NT$100,000 bail and faces charges for endangering public safety and interfering with transportation.  
 
-**1.1.2 incident Aftermath**
+**1.1.2 The Incident Aftermath**
 
 The incident triggered significant public and governmental concern regarding the cybersecurity resilience of critical transportation infrastructure against low-cost and widely accessible attack technologies. Following the event, Taiwan transportation authorities initiated comprehensive reviews of railway and metro communication systems, focusing on improving authentication mechanisms, encryption, parameter management, and wireless communication security hardening.
 
 This event also highlighted how cyberattacks targeting OT communication systems can directly affect railway operational safety, train scheduling, passenger services, and emergency response procedures.
 
-**1.1.3 Reference Link** 
+**1.1.3 Related Reference Link** 
 
 - https://gbhackers.com/taiwan-high-speed-rail-hit-by-spoofing-attack/
 - https://sqmagazine.co.uk/taiwan-student-high-speed-rail-cyberattack/
@@ -69,7 +92,7 @@ This event also highlighted how cyberattacks targeting OT communication systems 
 
 #### 1.2 Introduction to the Land-Based Railway Cyber Twin Platform
 
-As described in the incident summary, the spoofing attack primarily targeted the railway train control communication process by cloning legitimate radio communication data and injecting false alarm messages into the operational environment. To demonstrate this type of cyberattack safely, the **Land-Based Railway Cyber Twin** platform is used to simulate the railway OT environment and replicate the attack scenario. The system interface overview is shown below:
+As described in the incident summary, the spoofing attack primarily targeted the railway train control communication process by cloning legitimate radio communication data and injecting false alarm messages into the operational environment. To demonstrate this type of cyberattack safely, the Land-Based Railway OT Cyber Twin platform is used to simulate the railway OT environment and replicate the attack scenario. The system interface overview is shown below:
 
 ![](Case0_img/s_03.png)
 
@@ -87,13 +110,13 @@ The **Land-Based Railway Simulation Cyber Twin System** is a fully software-base
 - Human-Machine Interface (HMI) monitoring systems
 - Industrial communication protocols and field device simulations
 
-The ISA-95 / IEC-62264 system architecture implementation of the railway cyber twin platform is shown below:
+The ISA-95 / IEC-62264 system architecture of the railway cyber twin platform is shown below:
 
 ![](Case0_img/s_04.png)
 
 **1.2.2 Detailed System Introduction Document**
 
-The railway cyber range has been used in multiple international cybersecurity exercises, professional training programs, and OT security research projects. Additional project details and related technical references are available in the following documents:
+The railway cyber range has been used in multiple international cybersecurity exercises, university professional training programs, and OT security research projects. Additional project details and related technical references are available in the following documents:
 
 - https://github.com/LiuYuancheng/Land_Based_Railway_Simulation_Cyber_Range_Document
 - [Use PLC to Implement Land Based Railway Track Fixed Block Signaling OT System](https://www.linkedin.com/pulse/use-plc-implement-land-based-railway-track-fixed-block-yuancheng-liu-saaec)
@@ -111,18 +134,20 @@ The railway cyber range has been used in multiple international cybersecurity ex
 
 ### 2. Spoofing Attack Analysis
 
-This section analyzes the Taiwan High Speed Rail (THSR) spoofing attack using the MITRE ATT&CK for ICS (Industrial Control Systems) framework and explains how a similar attack scenario can be replicated within the Land-Based Railway Simulation Cyber Twin System. The objective includes:
+This section analyzes the Taiwan High Speed Rail (THSR) spoofing attack using the MITRE ATT&CK framework's ICS (Industrial Control Systems) Matrix and explains how a similar attack scenario can be replicated within the Land-Based Railway Simulation Cyber Twin System. The objective includes:
 
-- Understand the attacker’s workflow, identify the related ICS attack techniques. 
-- Demonstrate how False Data Injection (FDI) and signal spoofing attacks can affect railway Operational Technology (OT) environments.
+- Understand the attacker’s workflow, identify the related ICS attack techniques (TTP). 
+- Demonstrate how FDI and signal spoofing attacks can affect railway Operational Technology (OT) environments.
 
-#### 2.1 MITRE ATT&CK for ICS Framework Mapping
+#### 2.1 MITRE ATT&CK ICS Framework Mapping
 
-This section maps the reported THSR spoofing attack to the MITRE ATT&CK for ICS framework and identifies which attack techniques are implemented in the cyber twin simulation environment.
+This section maps the reported THSR spoofing attack to the MITRE ATT&CK framework 's ICS Matrix and identifies which attack techniques are implemented in the cyber twin simulation environment.
 
-The attack workflow consists of several stages, including wireless reconnaissance, communication exploitation, signal impersonation, false data injection, and operational disruption. The mapping diagram is shown below:
+The attack workflow consists of several stages, including wireless reconnaissance, communication exploitation, signal impersonation, false data injection, and operational disruption. The ICS Matrix mapping diagram is shown below:
 
 ![](Case0_img/s_05.png)
+
+**2.1.1 TTP ICS Matrix Mapping Table** 
 
 | **Tactic**                 | **Technique ID** | **Technique Name**                         | **Attack Detail**                                            | Apply  on Cyber Twin |
 | -------------------------- | ---------------- | ------------------------------------------ | ------------------------------------------------------------ | -------------------- |
@@ -134,19 +159,17 @@ The attack workflow consists of several stages, including wireless reconnaissanc
 | **Impair Process Control** | **T0855**        | **Unauthorized Command Message**           | Transmitted a high-priority "General Alarm" signal to the control center and trains. | Yes                  |
 | **Impact**                 | **T0879**        | **Damage to Property / Denial of Service** | Forced emergency braking on 4 trains, causing a 48-minute total operational shutdown. | Yes                  |
 
-Within the cyber twin environment, most of the attack stages can be replicated safely using simulated OT communication protocols, virtual RTUs, and software-defined signaling systems.
-
-
+Within the cyber twin environment, most of the attack stages can be replicated safely using simulated OT communication protocols, virtual PLC & RTUs, and software-defined signaling systems.
 
 #### 2.2 Replicated Attack Outline on Cyber Twin
 
-The primary attack vector in the reported spoofing incident was the injection of unauthorized alarm data into the railway communication system. Therefore, this case study focuses on simulating a similar False Data Injection (FDI) attack within the railway cyber twin platform. 
+The primary attack vector in the reported spoofing incident was the injection of unauthorized alarm data into the railway communication system. Therefore, this case study focuses on simulating a similar False Data Injection attack within the railway cyber twin platform. 
 
-In the real-world incident, the attacker targeted wireless radio communication infrastructure using spoofed beacon signals. In the cyber range environment, the wireless and radio communication links are simulated using industrial OT communication protocols over IP networks. The protocol selected for this case study is **Siemens S7comm**, which is commonly used for industrial communication between PLCs, RTUs, SCADA systems, and distributed OT devices over Ethernet, wireless bridges, and industrial radio links.
+In the real-world incident, the attacker targeted wireless radio communication infrastructure using spoofed beacon signals. In the cyber range environment, the wireless and radio communication links are simulated using industrial OT communication protocols over IP networks. The protocol selected for this case study is Siemens S7comm, which is commonly used for industrial communication between PLCs, RTUs, SCADA systems, and distributed OT devices over Ethernet, wireless bridges, and industrial radio links.
 
-The replicated attack workflow consists of the following stages:
+The replicated attack workflow consists of the following stages :
 
-- **Signal Analysis** : S7Comm radio signals analysis and data decryption.
+- **Radio Signal Analysis** : S7Comm radio signals analysis and data decryption.
 - **Parameter Cracking and Packet Construction** : Decode train data parameters and generate the false data packet. 
 - **False Data Injection**: Transmit unauthorized false operational packet to train data collection RTU via radio antenna. 
 - **Operational Impact on OCC** : Trigger abnormal operational states within the OCC and activate emergency protection logic. 
@@ -185,7 +208,7 @@ As shown in the system architecture diagram, the railway trains receive electric
 
 - The third track is divided into multiple continuous power blocks along the railway track sections labeled as `B01`, `B02`, `B03` ... ,  as the train moves along the track, it connects to these power blocks sequentially to receive electrical power. 
 - Each power block is connected to the main 750V DC transformer through a dedicated motorized control breaker or controllable relay module, represented as `CR01`, `CR02`, `CR03` ... These breakers simulate the real-world railway power isolation and protection mechanisms. 
-- Each controllable relay is connected to the output coils of the **Third-Track Block Power Control PLC**, allowing the PLC to remotely switch the power supply for each track section ON or OFF.
+- Each controllable relay is connected to the output coils of the Third-Track Block Power Control PLC, allowing the PLC to remotely switch the power supply for each track section ON or OFF.
 - The Third-Track Power Control PLC communicates with the Railway Operational Control Center (OCC) through the Modbus-TCP industrial communication protocol. Through the OCC Train Monitor Human-Machine Interface (HMI), operators can remotely monitor and control the power state of each railway track block.
 
 During emergency stop operations, the OCC operator can issue remote braking commands to the train. If the train does not respond correctly or continues moving abnormally, the operator can forcibly isolate the power supply by remotely opening the corresponding third-track breaker.
@@ -198,13 +221,13 @@ The railway radio communication system is the primary target subsystem of the sp
 
 As shown in the architecture diagram, each simulated train contains a virtual wireless communication module and train broadcast antenna responsible for transmitting real-time operational telemetry information to track-side communication towers. The transmitted operational information includes : `Current train speed`, `Average train speed`, `Brake air pressure`, `Input power voltage`, `Motor current`, `Train motor RPM`, `Radar status` `Timestamp` and `Other train operational telemetry data`.  
 
-In the cyber twin platform, the communication data transmission follows a simulated **Siemens S7 Message Structure (Protocol Data Unit - PDU)** format to emulate industrial OT communication behavior commonly used in railway and industrial control environments.
+In the cyber twin platform, the communication data transmission follows a simulated `Siemens S7 Message Structure (Protocol Data Unit - PDU)` format to emulate industrial OT communication behavior commonly used in railway and industrial control environments.
 
 The main components and design includes:
 
-- Along the railway track, multiple simulated radio receiver towers are deployed at fixed distances to receive operational telemetry data from nearby trains. 
-- Each track-side radio receiver tower forwards the collected operational data to the **Radio Link Data Management RTU (Remote Terminal Unit)**. The RTU aggregates telemetry data from multiple trains and then transmits the operational information to the Railway OCC using the **Siemens S7comm industrial communication protocol**.
-- At the OCC level, the received telemetry information is processed and visualized through the **OCC Train Monitor HMI Dashboard**, where railway operators can observe real-time train operational status and system alarms.
+- Along the railway track, multiple simulated radio receiver towers are deployed at fixed distances to receive operational telemetry data from the nearby trains. 
+- Each track-side radio receiver tower forwards the collected operational data to the Radio Link Data Management RTU (Remote Terminal Unit). The RTU aggregates telemetry data from multiple trains and then transmits the operational information to the Railway OCC using the Siemens-S7comm protocol.
+- At the OCC level, the received telemetry information is processed and visualized through the OCC Train Monitor HMI Dashboard, where railway operators can observe real-time train operational status and system alarms.
 
 Because the OCC relies on the integrity and authenticity of this communication data to make operational decisions, the railway radio communication subsystem becomes a critical attack surface for spoofing and False Data Injection (FDI) attacks.
 
@@ -216,20 +239,20 @@ To ensure operational safety within the railway cyber twin platform, the Operati
 
 ![](Case0_img/s_19.png)
 
-the physical world simulator continuously emulates train movement and operational behavior with train speeds ranging from **0 km/h to 100 km/h**. The train speed profile changes dynamically based on the simulated railway track conditions:
+the physical world simulator continuously simulates train movement and operational behavior with train speeds ranging from 0 km/h to 100 km/h. The train speed profile changes dynamically based on the simulated railway track conditions:
 
-- When the train is operating on a **straight track section**, the normal operational speed range is between **75 km/h and 100 km/h**.
-- When the train enters a **curved or bend track section**, the train speed is automatically reduced to a safer range between **60 km/h and 75 km/h**.
+- When the train is operating on a straight track section, the normal operational speed range is between 75 km/h and 100 km/h.
+- When the train enters a curved or bend track section, the train speed is automatically reduced to a safer range between 60 km/h and 75 km/h.
 
 The simulated train acceleration and deceleration behavior is implemented using linear speed transitions to emulate realistic railway operational characteristics.
 
 The emergency stop logic is implemented as a multi-stage railway safety protection mechanism.
 
-- **Stage 1 – Overspeed Detection** : When the OCC detects that a train is operating above the predefined speed limitation for more than **15 seconds**, the system generates an **Abnormal Speed Warning Alert** on the OCC dashboard. At the same time, the OCC automatically transmits a remote braking command to the train control subsystem requesting the train to reduce its speed.
-- **Stage 2 – Automatic Brake Verification** : After the braking command is issued, the OCC continues monitoring the train telemetry data received from the railway communication system. If the train speed remains abnormal or continues increasing during the next **15 seconds**, the OCC interprets the situation as a critical operational safety violation. At this stage, the Train Control HMI escalates the warning state into a **Critical Emergency Alarm** condition.
-- **Stage 3 – Emergency Power Isolation** : Once the critical alarm condition is triggered, the OCC automatically sends a remote command to the **Third-Track Power Control PLC** to disconnect the power supply of the affected railway block section.
+- **Stage 1 – Overspeed Detection** : When the OCC detects that a train is operating above the predefined speed limitation for more than 15 seconds, the system generates an Abnormal Speed Warning Alert on the OCC dashboard. At the same time, the OCC automatically transmits a remote braking command to the train control subsystem requesting the train to reduce its speed.
+- **Stage 2 – Automatic Brake Verification** : After the braking command is issued, the OCC continues monitoring the train telemetry data received from the railway communication system. If the train speed remains abnormal or continues increasing during the next 15 seconds, the OCC interprets the situation as a critical operational safety violation. At this stage, the Train Control HMI escalates the warning state into a Critical Emergency Alarm condition.
+- **Stage 3 – Emergency Power Isolation** : Once the critical alarm condition is triggered, the OCC automatically sends a remote command to the Third-Track Power Control PLC to disconnect the power supply of the affected railway block section.
 
-The PLC then opens the corresponding motorized control breaker connected to the third-track power system, immediately isolating the **750V DC power supply** from the train. Without traction power, the train is forced into an emergency stop condition.
+The PLC then opens the corresponding motorized control breaker connected to the third-track power system, immediately isolating the 750V DC power supply from the train. Without traction power, the train is forced into an emergency stop condition.
 
 In this cyberattack case study, the attacker’s objective is to intentionally trigger the automatic emergency stop mechanism by injecting spoofed operational telemetry and false train speed data into the railway communication system.
 
@@ -239,7 +262,7 @@ In this cyberattack case study, the attacker’s objective is to intentionally t
 
 ### 4. Attack Scenario and Demo on Cyber Twin
 
-This section introduces the simulated spoofing attack scenario implemented on the Land-Based Railway OT Simulation Cyber Twin platform and demonstrates how a False Data Injection (FDI) attack can trigger railway emergency protection mechanisms and disrupt train operations.
+This section introduces the detailed simulated spoofing attack scenario and path implemented on the Land-Based Railway OT Simulation Cyber Twin platform and demonstrates how a False Data Injection (FDI) attack can trigger railway emergency protection mechanisms and disrupt train operations.
 
 #### 4.1 Simulated Attack Scenario and Attack Path on Cyber Twin
 
@@ -251,20 +274,18 @@ The spoofing attack simulation consists of eight sequential stages:
 
 - **Step-T1: Eavesdrop Railway Radio Signals** : The attacker first creates a simulated radio receiver program to collect communication traffic between the train and the railway radio antenna system.
 - **Step-T2: Decode S7 Communication Parameters** : After collecting the traffic data, the attacker analyzes the captured packets to identify the industrial communication protocol structure and operational parameters.
-- **Step-T3: Create False Train Operational Data** : Using the decoded protocol structure and telemetry format, the attacker constructs forged S7 communication packets containing manipulated malicious operational payload (falsified train overspeed condition). 
+- **Step-T3: Create False Train Operational Data** : Using the decoded protocol structure and telemetry format, the attacker constructs forged S7 packets containing manipulated malicious operational payload (falsified train overspeed condition). 
 - **Step-T4: Inject Spoofed Communication Signals** : Transmit the forged S7 telemetry packets to the Radio Link Management RTU through the simulated radio antenna communication channel.
 - **Step-T5: False Data Transfer to OCC HMI** : The OCC Train Monitoring HMI retrieves the false speed data from the RTU through the Siemens S7comm communication protocol.
-- **Step-T6: Trigger Railway Alarm Mechanisms** : Once the falsified train speed exceeds the configured operational limit for a predefined duration, the OCC automatically activates the railway protection logic then sends automatic braking commands to the train.
+- **Step-T6: Trigger Railway Alarm Mechanisms** : Once the falsified train speed exceeds the configured operational limit for a predefined duration, the OCC automatically activates the protection logic then sends automatic braking commands to the train.
 - **Step-T7: Emergency Stop Protection Activation** : After the braking command fails to reduce the reported train speed, the OCC interprets the situation as a critical train operational fault. The OCC then issues a remote command to the Third-Track Power Control PLC to disconnect the power supply. 
 - **Step-T8: Train Emergency Stop** : Once the third-track power supply is disconnected, the train immediately loses traction power and enters the emergency stop state.
 
-
-
 #### 4.2 Cyber Attack Demonstration on Railway Cyber Twin
 
-The railway cyber twin platform used in this case study consists of 21OT virtual machines (VMs) distributed across multiple OT Green Team and Blue team network segments.
+The railway cyber twin platform used in this case study consists of 21virtual machines (VMs) distributed across multiple OT Green-Team and Blue-Team network segments.
 
-The simulated attack steps and targeted devices are illustrated in the cyber twin network topology below and the attack path is highlighted in the diagram using the numbered red workflow arrows.
+The simulated attack steps and targeted devices are illustrated in the cyber twin network topology below and the attack path is highlighted in the diagram using the numbered red workflow arrows as shown below:
 
 ![](Case0_img/s_08.png)
 
@@ -272,7 +293,7 @@ The simulated attack steps and targeted devices are illustrated in the cyber twi
 
 **4.2.1 Eavesdrop Radio Signal** 
 
-To simulate physical-world wireless signal interception, the attacker VM is deployed within the Green Team subnet, I use the TCPDump to simulate the radio receiving to capture communication traffic exchanged between the train and antenna. The TCPDump recording script used in the simulation is shown below:
+To simulate physical-world wireless signal interception, the attacker VM is deployed within the Green Team subnet, I use the software`TCPDump` to simulate the radio receiving to capture communication traffic exchanged between the train and antenna. The `TCPDump` recording script used in the simulation is shown below:
 
 ```bash
 #!/bin/bash
@@ -295,7 +316,7 @@ From the captured communication stream, the attacker identifies the message leng
 
 ![](Case0_img/s_10.png)
 
-Initially, the operational meaning of the telemetry data is unknown and hard to be identified by the hacker. Then  in the real incident as the THSR device was not updated for 19 years, here we make an assumption that there are already some signaling sequence information leaked to the public. 
+Initially, the operational meaning of the telemetry data is unknown and hard to be identified by the hacker. Then in the real world incident as the THSR device was not updated for 19 years, here we make an assumption that there are already some signaling sequence information leaked to the public and found by the hacker.
 
 The attacker identifies a frequently transmitted 8-byte when train pass by him and decoded the data:
 
@@ -332,7 +353,7 @@ The 8 bytes data sequence is : Train's Front Sensor Trigger State(2Bytes Bool), 
 
 **4.2.3 Create False Train Speed Data and Inject to Antenna**
 
-As shown in the network topology, the radio antenna simulator VM's IP address is `10.10.10.21`, the attacker then develops a spoofing script that continuously transmits forged high-speed telemetry data to overwrite the legitimate train operational data. The attacker also identifies that the train index value maps directly to the RTU data block index and selects: `Train ID = 00005` as the target.(As he find that the train Index is mapping to the same data block index of the RTU)
+As shown in the network topology, the radio antenna simulator VM's IP address is `10.10.10.21`, the attacker then develops a spoofing script that continuously transmits forged high-speed telemetry data to overwrite the legitimate train operational data. The attacker also identifies that the train index value maps directly to the RTU data block index and selects: `Train ID = 00005` as the target: 
 
 ![](Case0_img/s_11.png)
 
@@ -385,7 +406,7 @@ if connection:
 
 After finalizing the spoofing script and selecting Train 00005 as the target, the attacker waits until the train enters the communication coverage area of the radio antenna.
 
-When the train registers with the antenna system, the attacker begins transmitting the forged telemetry packets at high frequency. As the attack progresses, the OCC Train Monitoring HMI displays abnormal speed values, and the speed gauge becomes locked within the red danger zone. The OCC Train HMI View is shown below:
+When the train registers with the antenna system, the attacker begins transmitting the forged telemetry packets at high frequency at the same time. As the attack progresses, the OCC Train Monitoring HMI displays abnormal speed values, and the speed gauge becomes locked within the red danger zone (as shown below).
 
 ![](Case0_img/s_12.gif)
 
@@ -413,11 +434,11 @@ The emergency stop alarm is triggered, and the OCC sends a remote command to dis
 
 ![](Case0_img/s_16.gif)
 
-After 18mins, the emergency stop condition also impacts additional trains operating behind the affected train. As a result, multiple trains are forced to brake and stop, causing cascading railway service disruption along the pink railway line.
+After 18mins, the emergency stop condition also impacts additional two trains operating behind the affected train. As a result, multiple trains are forced to brake and stop, causing cascading railway service disruption along the pink railway line.
 
 ![](Case0_img/s_17.png)
 
-Now we simulated the entire process of the cyber incidence scenario happened in Taiwan High Speed Rail. To recover, the tower operator need to reset the RTU speed and off the impacted antenna's power then turn on the 3rd track block to make the 3 trains recover operational. 
+Now we simulated the entire process of the cyber incidence scenario happened in Taiwan High Speed Rail. To recover from the disruption, the OCC operators need to reset/clear the RTU data and turn off the impacted antenna's power, then turn on the 3rd track block to make the 3 trains recover operational. 
 
 
 
@@ -431,7 +452,7 @@ The spoofing attack demonstrated in this case study shows how railway Operationa
 
 Several monitoring and anomaly detection techniques can help identify spoofing or FDI attacks targeting railway communication systems:
 
-- **Communication Traffic Behavior-Based Anomaly Detection** :
+- **Communication Traffic Behavior-Based Anomaly Detection**
 - **Operational Logic Validation:** Validate train operational telemetry against physical railway constraints.
 - **Cross-Sensor Data Correlation:** Compare train operational data collected from multiple independent sources 
 - **Industrial Intrusion Detection Systems (IDS):** Deploy OT-aware IDS solutions capable of monitoring industrial protocols. 
@@ -457,6 +478,12 @@ In the event of a suspected railway OT spoofing attack, rapid incident response 
 - Block unauthorized communication sources and rogue radio devices.
 - Coordinate incident response between railway operators, OT engineers, cybersecurity teams, and transportation authorities.
 - Conduct post-incident analysis and update detection signatures, communication policies, and operational procedures.
+
+
+
+### 6. Summary
+
+For case study summary lease refer to the video: 
 
 
 
