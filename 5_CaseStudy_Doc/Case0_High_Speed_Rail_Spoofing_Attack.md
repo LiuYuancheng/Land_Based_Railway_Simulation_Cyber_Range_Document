@@ -2,7 +2,7 @@
 
 **Project Background and Design Purpose** : 
 
-The idea for this case study was inspired by the report “**Taiwan High Speed Rail Hit by Spoofing Attack That Stops Three Trains**” released on 06 May 2026, which described a cybersecurity incident targeting the Taiwan railway’s Operational Technology (OT) and communication infrastructure. According to the report, three high-speed rail trains were unexpectedly forced into emergency stop conditions, resulting in approximately 48 minutes of service disruption across major transit operations. Preliminary investigation indicated that the incident was related to a signal spoofing attack affecting the railway communication and control system.
+The idea for this case study was inspired by the report “**Taiwan High Speed Rail Hit by Spoofing Attack That Stops Three Trains**” released on 06 May 2026, which described a cybersecurity incident targeting the Taiwan railway’s Operational Technology (OT) and communication infrastructure. According to the report, three high-speed rail trains were unexpectedly forced into emergency stop conditions, resulting in approximately 48 minutes of service disruption across major transit operations. Preliminary investigation indicated that the incident was related to a signal spoofing attack affecting the railway communication and control system. The objective of this project is to replicate and simulate the attack accident scenario in a cyber twin system.
 
 ![](Case0_img/s_01.png)
 
@@ -483,7 +483,9 @@ In the event of a suspected railway OT spoofing attack, rapid incident response 
 
 ### 6. Summary
 
-For case study summary lease refer to the video: 
+This case study demonstrates that railway OT communication systems can become a critical attack surface when operational trust relationships are not sufficiently protected. By combining industrial cybersecurity monitoring, secure communication design, operational anomaly detection, and realistic cyber range training, railway operators can significantly improve the resilience of critical transportation infrastructure against spoofing and False Data Injection attacks.
+
+For case study summary lease refer to the video: https://youtu.be/6RZW3EJhmyA
 
 
 
