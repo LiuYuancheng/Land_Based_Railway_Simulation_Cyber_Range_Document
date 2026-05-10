@@ -239,38 +239,40 @@ In this cyberattack case study, the attacker’s objective is to intentionally t
 
 ### 4. Attack Scenario and Demo on Cyber Twin
 
-This section will introduce the simulated spoofing attack scenario and show the demo of the attack on the cyber twin. 
+This section introduces the simulated spoofing attack scenario implemented on the Land-Based Railway OT Simulation Cyber Twin platform and demonstrates how a False Data Injection (FDI) attack can trigger railway emergency protection mechanisms and disrupt train operations.
 
-#### 4.1 Simulated Attack Scenario and Path on Cyber Twin
+#### 4.1 Simulated Attack Scenario and Attack Path on Cyber Twin
 
-The attack flow diagram is shown below:
+The objective of the attack simulation is to reproduce a communication-layer spoofing attack similar to the Taiwan High Speed Rail (THSR) incident by targeting the railway radio communication infrastructure and injecting forged train operational telemetry into the Operational Control Center (OCC). The overall attack workflow implemented in the cyber twin environment is shown below:
 
 ![](Case0_img/s_07.png)
 
-During the attack there will be eight stages: 
+The spoofing attack simulation consists of eight sequential stages: 
 
-- Step-T1 Eavesdrop Radio Signal : Create a data fetching program (radio receiver) to collect the traffic packet. 
-- Step-T2 Decode Parameters : Decode the S7 message from traffic data packet and find the useful parameter. 
-- Step-T3 Create False Train Data : Based on Step2 create the S7 message with false data (Train over speed ). 
-- Step-T4 Inject Spoofing Signal : Create a data upload program to inject the spoofing S7 data to the RTU via antenna. 
-- Step-T5 False Data Transfer to OCC HMI : OCC HMI connect to the RTU and fetch the false Train over speed data. 
-- Step-T6 Trigger Alarm Mechanisms : OCC HMI detect Train speed over up limitation, trigger the protection mechanism and send the action control command to PLC via Modbus-TCP bus
-- Step-T7 Emergency Stop Activated:  PLC send control signal to the motorized control breaker to cut off the power supply to 3rd track block B03. 
-- Step-T8 Train Emergency Stop : Power transmission cut off and train stop immediately. 
+- **Step-T1: Eavesdrop Railway Radio Signals** : The attacker first creates a simulated radio receiver program to collect communication traffic between the train and the railway radio antenna system.
+- **Step-T2: Decode S7 Communication Parameters** : After collecting the traffic data, the attacker analyzes the captured packets to identify the industrial communication protocol structure and operational parameters.
+- **Step-T3: Create False Train Operational Data** : Using the decoded protocol structure and telemetry format, the attacker constructs forged S7 communication packets containing manipulated malicious operational payload (falsified train overspeed condition). 
+- **Step-T4: Inject Spoofed Communication Signals** : Transmit the forged S7 telemetry packets to the Radio Link Management RTU through the simulated radio antenna communication channel.
+- **Step-T5: False Data Transfer to OCC HMI** : The OCC Train Monitoring HMI retrieves the false speed data from the RTU through the Siemens S7comm communication protocol.
+- **Step-T6: Trigger Railway Alarm Mechanisms** : Once the falsified train speed exceeds the configured operational limit for a predefined duration, the OCC automatically activates the railway protection logic then sends automatic braking commands to the train.
+- **Step-T7: Emergency Stop Protection Activation** : After the braking command fails to reduce the reported train speed, the OCC interprets the situation as a critical train operational fault. The OCC then issues a remote command to the Third-Track Power Control PLC to disconnect the power supply. 
+- **Step-T8: Train Emergency Stop** : Once the third-track power supply is disconnected, the train immediately loses traction power and enters the emergency stop state.
 
 
 
-#### 4.2 Cyber Attack Demo on Cyber Twin
+#### 4.2 Cyber Attack Demonstration on Railway Cyber Twin
 
-The cyber twin is configured in 21 VMs with in different networks as shown below and each attack steps and target VM are marked in the cyber twin network topology: 
+The railway cyber twin platform used in this case study consists of 21OT virtual machines (VMs) distributed across multiple OT Green Team and Blue team network segments.
+
+The simulated attack steps and targeted devices are illustrated in the cyber twin network topology below and the attack path is highlighted in the diagram using the numbered red workflow arrows.
 
 ![](Case0_img/s_08.png)
 
+
+
 **4.2.1 Eavesdrop Radio Signal** 
 
-So simulate the Eavesdrop from the physical device, the attacker's VM will be setup in the Green Team subnet which is different from normal OT attack scenario.  I use the TCP dump program to simulate the Radio Signal Eavesdrop progress to save the data as PCAP. The TCP dump file will running in the Green team router.
-
-Use the below command bash file to record the traffic
+To simulate physical-world wireless signal interception, the attacker VM is deployed within the Green Team subnet, I use the TCPDump to simulate the radio receiving to capture communication traffic exchanged between the train and antenna. The TCPDump recording script used in the simulation is shown below:
 
 ```bash
 #!/bin/bash
@@ -279,21 +281,23 @@ dumpfile="/home/router_admin/tcpdump/"$now"Tcpdump.pcap"
 nohup tcpdump -i any -w $dumpfile -C 500 -K -n -B 20000 &
 ```
 
+The packet capture process is executed on the Green Team router to simulate passive radio communication monitoring and the captured traffic is stored as PCAP files for later analysis.
+
 
 
 **4.2.2 Decode S7 Message Parameters**
 
-The we use wire shark to decode the S7 Messages, as attacker know the message is a simulated S7 data so we use the filter to get the protocol match the ISO 8073/X.224 COTP as shown below: 
+After capturing the communication traffic, the attacker analyzes the PCAP files using Wireshark to identify the industrial communication protocol and operational data structure. Because the attacker already knows that the target communication uses simulated Siemens S7 communication messages, the traffic is filtered using the **ISO 8073 / X.224 COTP** protocol filter: 
 
 ![](Case0_img/s_09.png)
 
-Then from the data transmission message we got the data length and the some data simple as shown below:
+From the captured communication stream, the attacker identifies the message length, transmission structure, and telemetry payload format as shown below:
 
 ![](Case0_img/s_10.png)
 
-But as attacker, it is hard to identify what's the data's meaning, he select a simple one 8 bytes data which appear frequently. Then  in the real incident as the THSR device was not updated for 19 years, here we make an assumption that there are already some signaling sequence information leaked to the public. 
+Initially, the operational meaning of the telemetry data is unknown and hard to be identified by the hacker. Then  in the real incident as the THSR device was not updated for 19 years, here we make an assumption that there are already some signaling sequence information leaked to the public. 
 
-Based on the leaked secret message and the data change frequency the attack try to decode the below type of message as shown below:
+The attacker identifies a frequently transmitted 8-byte when train pass by him and decoded the data:
 
 ```yaml
 S7 Communication
@@ -317,9 +321,7 @@ S7 Communication
             Data: 0000006402ec0096
 ```
 
-The 8 bytes data sequence is : Train's Front Sensor Trigger State(2Bytes Bool), Train Speed (2Bytes Int), Train Motor Voltage [V] (2Bytes Int), Train Operate Current [A] (2Bytes Int)
-
-For example in the Packet Example, data `0000006402ec0096` 
+The 8 bytes data sequence is : Train's Front Sensor Trigger State(2Bytes Bool), Train Speed (2Bytes Int), Train Motor Voltage [V] (2Bytes Int), Train Operate Current [A] (2Bytes Int). For example in the Packet Example, data `0000006402ec0096` can be decode : 
 
 - `0000` : Front Sensor is not triggered, not detect front train in alert distance 
 - `0064`: Train current speed 100km/h 
@@ -328,13 +330,13 @@ For example in the Packet Example, data `0000006402ec0096`
 
 
 
-**4.2.3 Create False Train Speed Data And Inject to Antenna**
+**4.2.3 Create False Train Speed Data and Inject to Antenna**
 
-As shown in the network topology, the radio antenna simulator VM's IP address is 10.10.10.21, now the attacker make a attack script to keep sending high frequency false data to the radio antenna simulator VM to overwrite the correct data. Based on the packet 01 shown in the previous section, he find that the train Index is mapping to the same data block index of the RTU. Then he find that he is able to attack the train ID = 00005 based on the 
+As shown in the network topology, the radio antenna simulator VM's IP address is `10.10.10.21`, the attacker then develops a spoofing script that continuously transmits forged high-speed telemetry data to overwrite the legitimate train operational data. The attacker also identifies that the train index value maps directly to the RTU data block index and selects: `Train ID = 00005` as the target.(As he find that the train Index is mapping to the same data block index of the RTU)
 
 ![](Case0_img/s_11.png)
 
-So he can build a S7Comm message sending program . He I use the S7Comm communication lib develop in the RTU simulator project https://github.com/LiuYuancheng/PLC_and_RTU_Simulator/tree/main/S7Comm_RTU_Simulator to build the attack script as shown below: 
+To build the sender, the attacker use the S7Comm lib develop in the RTU simulator project:  https://github.com/LiuYuancheng/PLC_and_RTU_Simulator/tree/main/S7Comm_RTU_Simulator, a example sender program is shown below:
 
 ```python
 import os
@@ -381,13 +383,13 @@ if connection:
 
 **4.2.4 Inject Spoofing Signal and Transfer False Data to OCC**
 
-Now the attack fixed the attack program and the target train 00005 , now he need to bring the attack the attack radio device near one of the antenna and wait the train_00005 pass the antenna, the train will "register" to the antenna when it do the 1st connection then it can start to transmit the data. So the attacker need to wait until the train active the antenna. Now when the train 00005 passed the antenna, he run the high frequency false data injection attack script at the same time. 
+After finalizing the spoofing script and selecting Train 00005 as the target, the attacker waits until the train enters the communication coverage area of the radio antenna.
 
-Then in the train OCC when the attack happening the speed gauge's needle will be stuck at the red zoom as shown below: 
+When the train registers with the antenna system, the attacker begins transmitting the forged telemetry packets at high frequency. As the attack progresses, the OCC Train Monitoring HMI displays abnormal speed values, and the speed gauge becomes locked within the red danger zone. The OCC Train HMI View is shown below:
 
 ![](Case0_img/s_12.gif)
 
-In OCC HMI display, the speed keep increasing until 200 km/h. The train ID = 00005 is ns-00 train on the map, at the physical world simulator, the train operate normal as shown below: 
+The manipulated speed values continuously increase until they exceed 200 km/h, despite the physical train simulator continuing to operate normally (56 km/h) as shown below:
 
 ![](Case0_img/s_13.png)
 
@@ -395,18 +397,69 @@ In OCC HMI display, the speed keep increasing until 200 km/h. The train ID = 000
 
 **4.2.5 Trigger Alarm Mechanisms and Train Emergency Stop Activated**
 
-When the train speed reached max limitation and last for 15 sec, the HMI will pop-up an Train speed abnormal alarm as shown below : 
+Once the forged train speed exceeds the configured safety threshold for more than 15 seconds, the OCC automatically generates a train overspeed alarm and pop-up a dialog as shown below:
 
 ![](Case0_img/s_14.png)
 
-At the same time it starts to sent remote brake control signal to the train 00005 to decrease the train speed, as the attacker keep injecting the false data, the control Alarm Mechanisms decide that the train got some problem as the brake not work. After 15 seconds the auto protection Train Emergency Stop Activated, at this time the emergency stop activated alarm pop-up and the train 00005(ns-0) 's power will be cut off as show below:
+At the same time, the OCC begins transmitting remote braking commands to Train 00005 to reduce the reported speed.
+
+However, because the attacker continuously injects falsified telemetry data, the OCC determines that the train braking system is malfunctioning or unresponsive. After an additional 15 seconds, the OCC automatically activates the emergency protection mechanism. 
+
+The emergency stop activated alarm dialog pop-up and the train 00005(ns-0) 's power will be cut off as show below:
 
 ![](Case0_img/s_15.png)
 
-And after 1 second the train got emergency stop state (flash with red and grey color ) on the physical world simulator as shown in the below image: 
+The emergency stop alarm is triggered, and the OCC sends a remote command to disconnect the third-track power supply for the affected railway block. Approximately one second later, the train enters the emergency stop state within the physical world simulator, indicated by the flashing red and grey train status as shown below:
 
 ![](Case0_img/s_16.gif)
 
-And that emergency stop cased another 2 train behind brake and stop to wait and the 3 trains service are disrupted on the pink line as shown below:
+After 18mins, the emergency stop condition also impacts additional trains operating behind the affected train. As a result, multiple trains are forced to brake and stop, causing cascading railway service disruption along the pink railway line.
 
 ![](Case0_img/s_17.png)
+
+Now we simulated the entire process of the cyber incidence scenario happened in Taiwan High Speed Rail. To recover, the tower operator need to reset the RTU speed and off the impacted antenna's power then turn on the 3rd track block to make the 3 trains recover operational. 
+
+
+
+------
+
+### 5. Possible Attack Detection and Defensive Mechanisms
+
+The spoofing attack demonstrated in this case study shows how railway Operational Technology (OT) systems can be affected by False Data Injection (FDI) attacks targeting the communication trust relationship between field devices, radio communication infrastructure, RTUs, and the Operational Control Center (OCC).
+
+#### 5.1 Possible Detection Mechanisms
+
+Several monitoring and anomaly detection techniques can help identify spoofing or FDI attacks targeting railway communication systems:
+
+- **Communication Traffic Behavior-Based Anomaly Detection** :
+- **Operational Logic Validation:** Validate train operational telemetry against physical railway constraints.
+- **Cross-Sensor Data Correlation:** Compare train operational data collected from multiple independent sources 
+- **Industrial Intrusion Detection Systems (IDS):** Deploy OT-aware IDS solutions capable of monitoring industrial protocols. 
+- **Wireless Spectrum Monitoring:** Continuously monitor railway radio frequency bands to detect unauthorized transmissions.
+
+#### 5.2 Possible Defensive Mechanisms
+
+To improve the cybersecurity resilience of railway OT systems against spoofing attacks, several defensive strategies can be implemented:
+
+- **Strong Authentication for OT Communication:** Implement mutual authentication and digital signature validation.
+- **Communication Encryption:** Protect railway communication traffic using modern encryption protocols 
+- **Regular Security Parameter Rotation:** Frequently rotate wireless communication keys and identifiers to reduce long-term exposure. 
+- **Protocol Security Hardening:** Add integrity verification, replay protection, and packet sequence validation mechanisms. 
+
+#### 5.3 Incident Response Actions
+
+In the event of a suspected railway OT spoofing attack, rapid incident response is critical to minimize operational disruption and maintain passenger safety. The response actions includes : 
+
+- Isolate suspicious communication channels or radio towers from the operational network.
+- Switch affected railway systems into manual or degraded operational modes.
+- Validate train telemetry using independent operational monitoring systems.
+- Preserve network traffic logs and PCAP data for forensic investigation.
+- Block unauthorized communication sources and rogue radio devices.
+- Coordinate incident response between railway operators, OT engineers, cybersecurity teams, and transportation authorities.
+- Conduct post-incident analysis and update detection signatures, communication policies, and operational procedures.
+
+
+
+------
+
+> last edit by LiuYuancheng (liu_yuan_cheng@hotmail.com) by 09/0/2026 if you have any problem, please send me a message. 
